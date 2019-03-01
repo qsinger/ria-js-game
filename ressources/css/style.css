@@ -100,7 +100,7 @@ main {
 #mainTitle {
     text-align: center;
     color:white;
-    background-color:orangered;
+    background: linear-gradient(180deg, rgb(240, 173, 142), rgba(218, 73, 28,1) 80%);
     height:100px;
     line-height:100px;
     margin:0;
