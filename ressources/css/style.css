@@ -1,5 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:200,400,400i,700|Roboto+Slab:700');
 
+html{
+    display: flex;
+    justify-content: center;
+    background-color: #d0d0d0;
+}
+
+body {
+    box-shadow: 0 0 5em 0 rgba(0, 0, 0, 0.6);
+    margin:0;
+    width: 1240px;
+    background-color: white;
+}
+
+header{
+    width: 100%;
+}
+
 * {
     box-sizing: border-box;
     font-family: 'Roboto Condensed', sans-serif;
@@ -10,21 +27,26 @@ a {
     text-decoration: none;
 }
 
+h1, h2, h3{
+    font-family: 'Roboto Slab', serif;
+}
+
+
 aside div {
-    width:200px;
-    box-shadow: 0 0 5px;
+    margin-left: 4em;
+    width:250px;
+    box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.6);
     padding: 0 0 10px 0;
 }
 
 aside h3 {
-    background-color: orangered; 
+    background-color: #e26633;
     color:white;
     padding:5px;
+    margin-top: 0;
 }
 
-body {
-    margin:0;
-}
+
 
 footer {
     background-color:#444444;
@@ -39,6 +61,7 @@ footer img {
 
 main {
     padding:20px;
+    display: flex;
 }
 
 #articles article header h2 {
@@ -64,23 +87,25 @@ main {
     display: block;
 }
 
-#gameWrapper {
+/*#gameWrapper {
     margin:auto;
-}
+}*/
 
 #mainMenu {
     background-color:#444444;
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight:bold;
-    padding-top:10px;
     margin:0;
+    height: 2em;
+    display: flex;
+    align-items: center;
 }
 
 #mainMenu menuItem {
-    width:10%;
-    padding-bottom:10px;
-    padding-left:10px;
-    padding-right:10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+
 }
 
 #mainMenu menuItem.selected {
@@ -88,9 +113,10 @@ main {
     color: orangered !important;
 }
 
-#mainMenu menuItem a {
+ #mainMenu menuItem a {
     text-decoration: none;
     color:white;
+    padding: 2em 1em 2em 1em;
 }
 
 #mainMenu menuItem.selected a{
@@ -98,10 +124,43 @@ main {
 }
 
 #mainTitle {
-    text-align: center;
-    color:white;
-    background-color:orangered;
-    height:100px;
-    line-height:100px;
-    margin:0;
+     text-align: center;
+     color:white;
+     background: -moz-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* ff3.6+ */
+     background: -webkit-gradient(linear, left top, left bottom, color-stop(2%, rgba(240,173,142,1)), color-stop(7%, rgba(240,173,142,1)), color-stop(82%, rgba(218,73,28,1)), color-stop(100%, rgba(218,73,28,1))); /* safari4+,chrome */
+     background: -webkit-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* safari5.1+,chrome10+ */
+     background: -o-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* opera 11.10+ */
+     background: -ms-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* ie10+ */
+     background: linear-gradient(180deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* w3c */
+     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0ad8e', endColorstr='#da491c',GradientType=0 ); /* ie6-9 */
+
+     height:125px;
+     padding-top: 30px;
+     margin: 0;
+
+ }
+
+
+
+
+@media screen and (max-width: 646px) {
+    body {
+        width: 100%;
+    }
+    #mainTitle{
+        padding-top: 20px;
+        font-size: 0.8em;
+    }
+    main{
+        flex-direction: column ;
+    }
+    aside{
+        display: flex;
+        justify-content: center;
+    }
+    aside div{
+        margin: 4em 0 4em 0;
+
+    }
+
 }
