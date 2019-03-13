@@ -202,6 +202,11 @@ main {
         text-align: left;
     }
 
+    #mainMenuResp.responsive a.selected {
+        background-color: white;
+        color: black;
+    }
+
     .topnav a:not(:first-child) {
         display: none;
     }

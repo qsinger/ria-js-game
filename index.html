@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="ressources/css/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
 
@@ -14,26 +15,34 @@
     </div>
     <nav>
         <menu id="mainMenu">
-            <menuitem>
-                <a href="game.html">Game</a>
-            </menuitem>
             <menuitem class="selected">
-                <a href="description.html">Description</a>
+                <a href="index">Description</a>
             </menuitem>
             <menuItem>
-                <a href="maquettes.html">Maquettes</a>
+                <a href="maquettes">Maquettes</a>
             </menuitem>
             <menuitem>
-                <a href="mockup.html">Mockup</a>
+                <a href="mockup">Mockup</a>
             </menuitem>
             <menuitem>
-                <a href="flux.html">Flux</a>
+                <a href="flux">Flux</a>
             </menuitem>
             <menuitem>
-                <a href="journal.html">Journal de bord</a>
+                <a href="journal">Journal de bord</a>
             </menuitem>
-
         </menu>
+
+        <div class="topnav" id="mainMenuResp">
+
+            <a href="index" class="selected">Description</a>
+            <a href="maquettes">Maquettes</a>
+            <a href="mockup">Mockup</a>
+            <a href="flux">Flux</a>
+            <a href="journal">Journal de bord</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <i class="fas fa-bars"></i>
+            </a>
+        </div>
     </nav>
 </header>
 
@@ -74,6 +83,18 @@
     <footer>
         <img id="logo" src="ressources/images/logo_full.png">
     </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function myFunction() {
+            var x = document.getElementById("mainMenuResp");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+    </script>
 
 </body>
 </html>
