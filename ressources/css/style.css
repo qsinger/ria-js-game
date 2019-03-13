@@ -46,8 +46,6 @@ aside h3 {
     margin-top: 0;
 }
 
-
-
 footer {
     background-color:#444444;
     padding-top:15px;
@@ -87,9 +85,9 @@ main {
     display: block;
 }
 
-/*#gameWrapper {
-    margin:auto;
-}*/
+#mainMenuResp{
+    display:none;
+}
 
 #mainMenu {
     background-color:#444444;
@@ -124,23 +122,18 @@ main {
 }
 
 #mainTitle {
-     text-align: center;
-     color:white;
-     background: -moz-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* ff3.6+ */
-     background: -webkit-gradient(linear, left top, left bottom, color-stop(2%, rgba(240,173,142,1)), color-stop(7%, rgba(240,173,142,1)), color-stop(82%, rgba(218,73,28,1)), color-stop(100%, rgba(218,73,28,1))); /* safari4+,chrome */
-     background: -webkit-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* safari5.1+,chrome10+ */
-     background: -o-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* opera 11.10+ */
-     background: -ms-linear-gradient(270deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* ie10+ */
-     background: linear-gradient(180deg, rgba(240,173,142,1) 2%, rgba(240,173,142,1) 7%, rgba(218,73,28,1) 82%, rgba(218,73,28,1) 100%); /* w3c */
-     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0ad8e', endColorstr='#da491c',GradientType=0 ); /* ie6-9 */
-
-     height:125px;
-     padding-top: 30px;
-     margin: 0;
-
- }
-
-
+    text-align: center;
+    color:white;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f5bfa5+0,e36837+75,d9461a+77,e05f32+100 */
+    background: #f5bfa5; /* Old browsers */
+    background: -moz-linear-gradient(top, #f5bfa5 0%, #e36837 75%, #d9461a 77%, #e05f32 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #f5bfa5 0%,#e36837 75%,#d9461a 77%,#e05f32 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #f5bfa5 0%,#e36837 75%,#d9461a 77%,#e05f32 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5bfa5', endColorstr='#e05f32',GradientType=0 ); /* IE6-9 */
+    height:125px;
+    padding-top: 35px;
+    margin: 0;
+}
 
 
 @media screen and (max-width: 646px) {
@@ -163,4 +156,58 @@ main {
 
     }
 
+}
+
+
+/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
+@media screen and (max-width: 360px) {
+
+    #mainMenu{
+        display:none;
+    }
+
+    #mainMenuResp{
+        overflow: hidden;
+        display: block;
+        background-color: #444444;
+        height: auto;
+    }
+
+    /* Style the links inside the navigation bar */
+    .topnav a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+    }
+
+    /* Change the color of links on hover */
+    .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    #mainMenuResp.responsive {position: relative;}
+    #mainMenuResp.responsive a.icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    #mainMenuResp.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+
+    .topnav a:not(:first-child) {
+        display: none;
+    }
+
+    .topnav a.icon {
+        float: right;
+        display: block;
+    }
 }
