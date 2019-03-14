@@ -94,7 +94,7 @@ main {
     font-size: 1em;
     font-weight:bold;
     margin:0;
-    height: 2em;
+    height: 2.5em;
     display: flex;
     align-items: center;
 }
@@ -114,7 +114,8 @@ main {
  #mainMenu menuItem a {
     text-decoration: none;
     color:white;
-    padding: 2em 1em 2em 1em;
+     display: flex;
+     padding: 0 1em;
 }
 
 #mainMenu menuItem.selected a{
@@ -160,7 +161,7 @@ main {
 
 
 /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
-@media screen and (max-width: 380px) {
+@media screen and (max-width: 420px) {
 
     #mainMenu{
         display:none;
