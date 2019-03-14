@@ -9,6 +9,7 @@ var player = {
 var then = Date.now();
 var keysDown = {};
 var roomSize = 20;
+var currentLevel = "test";
 
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
@@ -30,7 +31,8 @@ for(var x = 0; x <= roomSize; x++) {
         grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
     }
 }
-loadLevelData("ressources/rooms/test.txt");
+
+loadLevelData();
 
 //KEY LISTENERS
 addEventListener("keydown", function (e) {
@@ -70,6 +72,10 @@ var update = function (modifier) {
             player.x += player.speed * modifier;
 	}
     
+    if(getNextSquareType(player.x, player.y) == "D") {
+        enterRoom(0, 1);
+    }
+    
     //main walls collision detection
     if(player.x > canvas.width-player.width) {
         player.x = canvas.width-player.width;
@@ -90,6 +96,44 @@ function canPassSquare(sym) {
         return false
     else 
         return true;
+}
+
+function enterRoom(entrance, roomId) {
+    var startX = 0;
+    var startY = 0;
+    
+    // 0 : top
+    // 1 : right
+    // 2 : bottom
+    // 3 : left
+    switch(entrance) {
+        case 0:
+            startX = canvas.width/2;
+            startY = canvas.height/roomSize;
+            break;
+            
+        case 1: 
+            startX = canvas.width/roomSize;
+            startY = canvas.height/2;
+            break;
+            
+        case 2: 
+            startX = canvas.width/2;
+            startY = canvas.height-(canvas.height/roomSize);
+            break;
+            
+        case 3:
+            startX = canvas.width/roomSize;
+            startY = canvas.height/2;
+            break;
+    }
+    
+    player.x = startX;
+    player.y = startY;
+    
+    currentLevel = roomId;
+    loadLevelData(roomId);
+    drawRoom();
 }
 
 function getNextSquareType(x, y){
@@ -126,6 +170,10 @@ function getImage(sym) {
             img.src = "ressources/images/wall_test.jpg";
             break;
             
+        case "D" :
+            img.src = "ressources/images/door_test.jpg";
+            break;
+            
         default:
             img.src = "ressources/images/tile_1.jpg";
     }
@@ -133,8 +181,8 @@ function getImage(sym) {
 }
 
 //Transforms txt to a room plan
-function loadLevelData(path) {
-    
+function loadLevelData() {
+    var path = "ressources/rooms/" + currentLevel + ".txt";
     $.get(path, function(data) {
         
         //removes all line breaks
@@ -155,20 +203,6 @@ function loadLevelData(path) {
     }, 'text');
 }
 
-//DRAW
-function render() {
-    drawRoom();
-	if (playerReady) {
-		ctx.drawImage(
-            playerImage, 
-            player.x, 
-            player.y, 
-            player.width, 
-            player.height
-        );
-	}
-}
-
 function drawRoom() {
     for(var x = 0; x <= roomSize; x++) {
         for(var y = 0; y <= roomSize; y++){
@@ -181,6 +215,20 @@ function drawRoom() {
            );
         }
     }
+}
+
+//DRAW
+function render() {
+    drawRoom();
+	if (playerReady) {
+		ctx.drawImage(
+            playerImage, 
+            player.x, 
+            player.y, 
+            player.width, 
+            player.height
+        );
+	}
 }
 
 // The main game loop
