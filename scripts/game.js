@@ -9,7 +9,15 @@ var player = {
 var then = Date.now();
 var keysDown = {};
 var roomSize = 20;
-var currentLevel = "test";
+//var currentLevel = "test";
+
+var map = [];
+map[0] = [1,2,3];
+map[1] = [4,5,6];
+map[2] = [7,8,9];
+
+var coord = [1, 1];
+var currentLevel = map[coord[0]][coord[1]];
 
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
@@ -19,7 +27,7 @@ canvas.height = 480;
 
 //PLAYER IMAGE
 var playerImage = new Image();
-playerImage.src="ressources/images/zombie.png";
+playerImage.src = "ressources/images/zombie.png";
 var playerReady = true;
 
 //CREATES COORDINATES ARRAY FOR ROOM GRID
@@ -55,6 +63,8 @@ var update = function (modifier) {
     //print coordinates for testing :
     //console.log("X = "+player.x+"    Y = "+player.y);
     
+    
+    //LOOK AT LEFT RIGHT POINT POSITIONING
 	if (38 in keysDown || 87 in keysDown) { // Player holding up
         if (canPassSquare(getNextSquareType(player.x, player.y - (player.speed * modifier))))
              player.y -= player.speed * modifier;
@@ -64,16 +74,20 @@ var update = function (modifier) {
 		      player.y += player.speed * modifier;
 	}
 	if (37 in keysDown || 65 in keysDown) { // Player holding left
-        if (canPassSquare(getNextSquareType(player.x - (player.speed * modifier)-(canvas.width/roomSize), player.y)))
+        if (canPassSquare(getNextSquareType(player.x - (player.speed * modifier)-(player.width/2), player.y)))
 		    player.x -= player.speed * modifier;
 	}
 	if (39 in keysDown || 68 in keysDown) { // Player holding right
-        if (canPassSquare(getNextSquareType(player.x + (player.speed * modifier), player.y)))
+        if (canPassSquare(getNextSquareType(player.x + (player.speed * modifier)+(player.width/2), player.y)))
             player.x += player.speed * modifier;
 	}
     
-    if(getNextSquareType(player.x, player.y) == "D") {
-        enterRoom(0, 1);
+    console.log("coords : " + player.x + ", " + player.y + " and next square = " + getNextSquareType(player.x, player.y));
+    console.log("height : " + (canvas.height - player.height));
+    var nextSquare = getNextSquareType(player.x, player.y);
+    
+    if(nextSquare == "W" || nextSquare == "A" || nextSquare == "S" || nextSquare == "D") {
+        enterRoom(getEntrancePos(nextSquare), getNextRoom(nextSquare));
     }
     
     //main walls collision detection
@@ -90,6 +104,41 @@ var update = function (modifier) {
         player.y = 0;
     }
 };
+
+function getEntrancePos(type) {
+    switch(type) {
+        case "W" :
+            return 2;
+        case "A" :
+            return 1;
+        case "S" :
+            return 0;
+        case "D" :
+            return 3;
+    }
+}
+
+function getNextRoom(type) {
+    switch(type) {
+        case "W" :
+            coord[0] -= 1;
+            break;
+            
+        case "A" :
+            coord[1] -= 1;
+            break;
+            
+        case "S" :
+            coord[0] += 1;
+            break;
+            
+        case "D" :
+            coord[1] += 1;
+            break;
+    }
+    
+     return map[coord[0]][coord[1]];
+}
 
 function canPassSquare(sym) {
     if(sym == "X")
@@ -113,18 +162,18 @@ function enterRoom(entrance, roomId) {
             break;
             
         case 1: 
-            startX = canvas.width/roomSize;
-            startY = canvas.height/2;
+            startX = canvas.width-(player.width);
+            startY = canvas.height/2-player.height;
             break;
             
         case 2: 
             startX = canvas.width/2;
-            startY = canvas.height-(canvas.height/roomSize);
+            startY = canvas.height-(player.height);
             break;
             
         case 3:
-            startX = canvas.width/roomSize;
-            startY = canvas.height/2;
+            startX = player.width;
+            startY = canvas.height/2-player.height;
             break;
     }
     
@@ -139,6 +188,9 @@ function enterRoom(entrance, roomId) {
 function getNextSquareType(x, y){
     var col = Math.floor(x/(canvas.width/roomSize))+1;
     var row = Math.floor(y/(canvas.width/roomSize))+1;
+    
+    console.log("in this case Y = "+y)
+    if(y >= canvas.height-(player.height)) row = roomSize-1;
     
     if(col < 0) col = 0;
     if(row < 0) row = 0;
@@ -170,6 +222,9 @@ function getImage(sym) {
             img.src = "ressources/images/wall_test.jpg";
             break;
             
+        case "W" :
+        case "A" :
+        case "S" :
         case "D" :
             img.src = "ressources/images/door_test.jpg";
             break;
