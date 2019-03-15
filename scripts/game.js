@@ -11,10 +11,11 @@ var keysDown = {};
 var roomSize = 20;
 //var currentLevel = "test";
 
-var map = [];
-map[0] = [1,2,3];
-map[1] = [4,5,6];
-map[2] = [7,8,9];
+var map =   [
+                [1,2,3],
+                [4,5,6],
+                [7,8,9]
+            ];
 
 var coord = [1, 1];
 var currentLevel = map[coord[0]][coord[1]];
