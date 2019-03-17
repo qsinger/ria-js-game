@@ -1,5 +1,6 @@
 
-rooms = [
+function getMap(mapSize){
+/*rooms = [
     "0000",
     "0001",
     "0010",
@@ -16,14 +17,11 @@ rooms = [
     "1101",
     "1110",
     "1111",
-];
+];*/
 
 
 map = [];
 
-
-
-mapSize = 7;
 
 buildMap(mapSize);
 
@@ -32,7 +30,7 @@ function buildMap(mapSize){
     for(var i = 0; i < mapSize; i++) {
         map[i] = [];
         for(var j = 0; j < mapSize; j++) {
-            map[i][j] = rooms[0]
+            map[i][j] = "0000"
         }
     }
 
@@ -192,7 +190,9 @@ map.forEach(function (element) {
     console.log(element);
 });
 
+return map
 
+}
 /*    var upRoom = "0000";
 
     upLeft = map[x-1][y-1];
