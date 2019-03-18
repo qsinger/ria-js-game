@@ -13,10 +13,11 @@ var roomSize = 20;
 //var currentLevel = "test";
 
 
-var map =  getMap(7);
+var map =  newMaze(7,7);
 
 var coord = [1, 1];
 var currentLevel = map[coord[0]][coord[1]];
+// var currentLevel = map[0][0];
 
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
@@ -300,8 +301,6 @@ function main() {
 	requestAnimationFrame(main);
 }
 
-newMaze(5, 5)
-//LAUNCH MAIN
 reset();
 main();
 
@@ -366,212 +365,8 @@ function newMaze(x, y) {
         map[i] = [];
         for(let j = 0; j < cells.length; j++) {
             map[i][j] = cells[i][j].join('')
-            console.log(cells[i][j].join(''))
         }
-        
     }
-    console.log("mpa", map)
-    console.log(cells)
-    //return cells;
     return map;
-}
-
-
-function getMap(mapSize){
-    /*rooms = [
-        "0000",
-        "0001",
-        "0010",
-        "0011",
-        "0100",
-        "0101",
-        "0110",
-        "0111",
-        "1000",
-        "1001",
-        "1010",
-        "1011",
-        "1100",
-        "1101",
-        "1110",
-        "1111",
-    ];*/
-
-
-    map = [];
-
-
-    
-
-
-    buildMap(mapSize);
-
-    function buildMap(mapSize){
-
-        for(var i = 0; i < mapSize; i++) {
-            map[i] = [];
-            for(var j = 0; j < mapSize; j++) {
-                map[i][j] = "0000"
-            }
-        }
-
-        // define start room
-        var middle = (mapSize-1)/2;
-        //map[middle][middle] = rooms[rooms.length - 1];
-
-        // placeRooms(middle ,middle)
-        placeRooms(0 ,0)
-
-    }
-
-
-    function placeRooms(x,y) {
-
-        // up
-
-        for(var i = 0; i < mapSize; i++) {
-            map[i] = [];
-            for(var j = 0; j < mapSize; j++) {
-
-                let thisRoom = "0000";
-
-                if( i === 0){
-                    thisRoom = setUpDoor(thisRoom, "0");
-                    thisRoom = setDownDoor(thisRoom, String(Math.round(Math.random())));
-                    if (j !== 0){
-                        if (Number(map[i][j-1].charAt(1)) === 1){
-                            thisRoom = setLeftDoor(thisRoom, "1");
-                        }
-                        else {
-                            thisRoom = setLeftDoor(thisRoom, "0");
-                        }
-                    }
-                    else{
-
-                    }
-                    thisRoom = setRightDoor(thisRoom, String(Math.round(Math.random())));
-                }
-                if ( i === mapSize - 1){
-                    thisRoom = setDownDoor(thisRoom, "0");
-                    thisRoom = setUpDoor(thisRoom, String(Math.round(Math.random())));
-                    if (j !== 0){
-                        if (Number(map[i][j-1].charAt(1)) === 1){
-                            thisRoom = setLeftDoor(thisRoom, "1");
-                        }
-                        else {
-                            thisRoom = setLeftDoor(thisRoom, "0");
-                        }
-                    }
-                    thisRoom = setRightDoor(thisRoom, String(Math.round(Math.random())));
-                }
-                if ( j === 0){
-                    thisRoom = setLeftDoor(thisRoom, "0");
-                    thisRoom = setRightDoor(thisRoom, String(Math.round(Math.random())));
-                    if (i !== 0){
-                        if (Number(map[i-1][j].charAt(2)) === 1){
-                            thisRoom = setUpDoor(thisRoom, "1");
-                        }
-                        else {
-                            thisRoom = setUpDoor(thisRoom, "0");
-                        }
-                    }
-                    thisRoom = setDownDoor(thisRoom, String(Math.round(Math.random())));
-                }
-                if ( j ===  mapSize - 1){
-                    thisRoom = setRightDoor(thisRoom, "0");
-                    if (i !== 0){
-                        if (Number(map[i-1][j].charAt(2)) === 1){
-                            thisRoom = setUpDoor(thisRoom, "1");
-                        }
-                        else {
-                            thisRoom = setUpDoor(thisRoom, "0");
-                        }
-                    }
-                    thisRoom = setDownDoor(thisRoom, String(Math.round(Math.random())));
-                }
-                if(i !== 0 && j !== 0 ){
-                    if (j ===  mapSize - 1){
-                        thisRoom = setRightDoor(thisRoom, "0");
-                    }
-                    else {
-                        thisRoom = setRightDoor(thisRoom, String(Math.round(Math.random())));
-                    }
-                    if (i ===  mapSize - 1){
-                        thisRoom = setDownDoor(thisRoom, "0");
-                    }
-                    else {
-                        thisRoom = setDownDoor(thisRoom, String(Math.round(Math.random())));
-                    }
-                    if (Number(map[i][j-1].charAt(1)) === 1){
-                        thisRoom = setLeftDoor(thisRoom, "1");
-                    }
-                    else {
-                        thisRoom = setLeftDoor(thisRoom, "0");
-                    }
-                    if (Number(map[i-1][j].charAt(2)) === 1){
-                        thisRoom = setUpDoor(thisRoom, "1");
-                    }
-                    else {
-                        thisRoom = setUpDoor(thisRoom, "0");
-                    }
-                }
-
-
-
-                map[i][j] = thisRoom
-
-            }
-        }
-
-
-
-    }
-
-    function setUpDoor(room, door){
-        // find a way to déclare gloabally
-        String.prototype.replaceAt=function(index, replacement) {
-            return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
-        };
-
-        room =  room.replaceAt(0, door);
-        return room
-    }
-
-    function setDownDoor(room, door){
-        // find a way to déclare gloabally
-        String.prototype.replaceAt=function(index, replacement) {
-            return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
-        };
-
-        room =  room.replaceAt(2, door);
-        return room
-    }
-
-    function setLeftDoor(room, door){
-        // find a way to déclare gloabally
-        String.prototype.replaceAt=function(index, replacement) {
-            return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
-        };
-
-        room =  room.replaceAt(3, door);
-        return room
-    }
-    function setRightDoor(room, door){
-        // find a way to déclare gloabally
-        String.prototype.replaceAt=function(index, replacement) {
-            return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
-        };
-
-        room =  room.replaceAt(1, door);
-        return room
-    }
-
-
-    map.forEach(function (element) {
-        console.log(element);
-    });
-
-    return map
-
 }
 
