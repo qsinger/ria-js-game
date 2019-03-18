@@ -243,3 +243,13 @@ table th {
     color: white;
     background-color: #444444;
 }
+/*maze*/
+
+#maze {
+    border-collapse: collapse;
+    margin-left: 5em;
+}
+#maze td {
+    border: none;
+    border-collapse: collapse;
+}

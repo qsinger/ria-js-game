@@ -13,11 +13,13 @@ var roomSize = 20;
 //var currentLevel = "test";
 
 
-var map =  newMaze(7,7);
+var map =  newMaze(20,20);
 
-var coord = [1, 1];
+
+var coord = [0, 0];
 var currentLevel = map[coord[0]][coord[1]];
 // var currentLevel = map[0][0];
+console.log("---", currentLevel)
 
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
@@ -361,12 +363,26 @@ function newMaze(x, y) {
             currentCell = path.pop();
         }
     }
+    for (var i = 0; i < cells.length; i++) {
+        $('#maze > tbody').append("<tr>");
+        for (var j = 0; j < cells[i].length; j++) {
+            var selector = i+"-"+j;
+            $('#maze > tbody').append("<td id='"+selector+"'>&nbsp;</td>");
+            if (cells[i][j][0] == 0) { $('#'+selector).css('border-top', '2px solid black'); }
+            if (cells[i][j][1] == 0) { $('#'+selector).css('border-right', '2px solid black'); }
+            if (cells[i][j][2] == 0) { $('#'+selector).css('border-bottom', '2px solid black'); }
+            if (cells[i][j][3] == 0) { $('#'+selector).css('border-left', '2px solid black'); }
+
+        }
+        $('#maze > tbody').append("</tr>");
+    }
     for (let i = 0; i < cells.length; i++) {
         map[i] = [];
         for(let j = 0; j < cells.length; j++) {
             map[i][j] = cells[i][j].join('')
         }
     }
-    return map;
+   // return map;
+    return map
 }
 
