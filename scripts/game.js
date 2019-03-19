@@ -13,7 +13,7 @@ var roomSize = 20;
 //var currentLevel = "test";
 
 
-var map =  newMaze(20,20);
+var map =  newMaze(7,7);
 
 
 var coord = [0, 0];
