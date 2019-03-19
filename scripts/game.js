@@ -187,7 +187,6 @@ function enterRoom(entrance, roomId) {
     currentLevel = roomId;
     loadLevelData(roomId);
     drawRoom();
-    drawMap();
 }
 
 function getNextSquareType(x, y){
@@ -263,6 +262,7 @@ function loadLevelData() {
 }
 
 function drawRoom() {
+    drawMap();
     for(var x = 0; x <= roomSize; x++) {
         for(var y = 0; y <= roomSize; y++){
            ctx.drawImage(
@@ -419,6 +419,7 @@ function drawMap() {
                             );
             if(x == coord[0] && y == coord[1]) {
                 console.log("FOUND PLAYER AT "+ coord[0] + " : " + coord[1]);
+                console.log("drawing ");
                  ctxMap.drawImage(
                                     playerPos,                      //image
                                     (tileWidth*y)+tileWidth/4,      //coord x
