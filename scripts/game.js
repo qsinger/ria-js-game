@@ -12,25 +12,16 @@ var keysDown = {};
 var roomSize = 20;
 //var currentLevel = "test";
 
-
-var map =  newMaze(7,7);
-
-
-var coord = [0, 0];
-var currentLevel = map[coord[0]][coord[1]];
-// var currentLevel = map[0][0];
-console.log("---", currentLevel)
-
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
 var ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
 
-//PLAYER IMAGE
-var playerImage = new Image();
-playerImage.src = "ressources/images/zombie.png";
-var playerReady = true;
+var mapCanvas = document.getElementById("map");
+var ctxMap = mapCanvas.getContext("2d");
+mapCanvas.width = 512;
+mapCanvas.height = 480;
 
 //CREATES COORDINATES ARRAY FOR ROOM GRID
 var grid = [];
@@ -41,6 +32,19 @@ for(var x = 0; x <= roomSize; x++) {
         grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
     }
 }
+
+var floorSize = 10;
+var coord = [0, 0];
+var map =  newMaze(floorSize);
+var currentLevel = map[coord[0]][coord[1]];
+
+// var currentLevel = map[0][0];
+// console.log("---", currentLevel);
+
+//PLAYER IMAGE
+var playerImage = new Image();
+playerImage.src = "ressources/images/zombie.png";
+var playerReady = true;
 
 loadLevelData();
 
@@ -84,8 +88,6 @@ var update = function (modifier) {
             player.x += player.speed * modifier;
 	}
     
-    console.log("coords : " + player.x + ", " + player.y + " and next square = " + getNextSquareType(player.x, player.y));
-    console.log("height : " + (canvas.height - player.height));
     var nextSquare = getNextSquareType(player.x, player.y);
     
     if(nextSquare == "W" || nextSquare == "A" || nextSquare == "S" || nextSquare == "D") {
@@ -165,7 +167,7 @@ function enterRoom(entrance, roomId) {
             
         case 1: 
             startX = canvas.width-(player.width);
-            startY = canvas.height/2-player.height;
+            startY = canvas.height/2-(player.height/2);
             break;
             
         case 2: 
@@ -175,7 +177,7 @@ function enterRoom(entrance, roomId) {
             
         case 3:
             startX = player.width;
-            startY = canvas.height/2-player.height;
+            startY = canvas.height/2-(player.height/2);
             break;
     }
     
@@ -185,13 +187,13 @@ function enterRoom(entrance, roomId) {
     currentLevel = roomId;
     loadLevelData(roomId);
     drawRoom();
+    drawMap();
 }
 
 function getNextSquareType(x, y){
     var col = Math.floor(x/(canvas.width/roomSize))+1;
     var row = Math.floor(y/(canvas.width/roomSize))+1;
     
-    console.log("in this case Y = "+y)
     if(y >= canvas.height-(player.height)) row = roomSize-1;
     
     if(col < 0) col = 0;
@@ -307,13 +309,16 @@ reset();
 main();
 
 
-function newMaze(x, y) {
-
+function newMaze(floorSize) {
+    
     // Establish variables and starting grid
+    var x = floorSize;
+    var y = floorSize;
     var totalCells = x*y;
     var map = [];
     var cells = new Array();
     var unvis = new Array();
+    
     for (var i = 0; i < y; i++) {
         cells[i] = new Array();
         unvis[i] = new Array();
@@ -340,7 +345,9 @@ function newMaze(x, y) {
         
         // Determine if each neighboring cell is in game grid, and whether it has already been checked
         for (var l = 0; l < 4; l++) {
-            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { neighbors.push(pot[l]); }
+            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { 
+                neighbors.push(pot[l]); 
+            }
         }
         
         // If at least one active neighboring cell has been found
@@ -363,6 +370,7 @@ function newMaze(x, y) {
             currentCell = path.pop();
         }
     }
+    
     for (var i = 0; i < cells.length; i++) {
         $('#maze > tbody').append("<tr>");
         for (var j = 0; j < cells[i].length; j++) {
@@ -376,13 +384,49 @@ function newMaze(x, y) {
         }
         $('#maze > tbody').append("</tr>");
     }
+    
     for (let i = 0; i < cells.length; i++) {
         map[i] = [];
         for(let j = 0; j < cells.length; j++) {
             map[i][j] = cells[i][j].join('')
         }
     }
-   // return map;
+    drawMap();
     return map
 }
 
+function drawMap() {
+    
+    var tileWidth = mapCanvas.width/floorSize;
+    var tileHeight = mapCanvas.height/floorSize;
+    
+    var playerPos = new Image();
+    var unknown = new Image();
+    
+    playerPos.src = "ressources/images/youAreHere.png";
+    unknown.src = "ressources/images/questionMark.png";
+    
+    console.log(coord[0] + " : " + coord[1]);
+    
+    for(var x = 0; x < floorSize; x++) {
+        for(var y = 0; y < floorSize; y++){
+            ctxMap.drawImage(
+                                unknown,        //image
+                                tileWidth*y,    //coord x
+                                tileHeight*x,   //coord y
+                                tileWidth,      //width 
+                                tileHeight      //height
+                            );
+            if(x == coord[0] && y == coord[1]) {
+                console.log("FOUND PLAYER AT "+ coord[0] + " : " + coord[1]);
+                 ctxMap.drawImage(
+                                    playerPos,                      //image
+                                    (tileWidth*y)+tileWidth/4,      //coord x
+                                    (tileHeight*x)+tileHeight/4,    //coord y
+                                    tileWidth/2,                    //width 
+                                    tileHeight/2                    //height
+                                );
+            }
+        }
+    }
+}
