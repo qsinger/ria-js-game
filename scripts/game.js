@@ -10,16 +10,9 @@ var player = {
 var then = Date.now();
 var keysDown = {};
 var roomSize = 20;
-//var currentLevel = "test";
-
-
-var map =  newMaze(7,7);
-
-
+var floorSize = 5;
 var coord = [0, 0];
-var currentLevel = map[coord[0]][coord[1]];
-// var currentLevel = map[0][0];
-console.log("---", currentLevel)
+//var currentLevel = "test";
 
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
@@ -27,20 +20,35 @@ var ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
 
+var mapCanvas = document.getElementById("map");
+var ctxMap = mapCanvas.getContext("2d");
+mapCanvas.width = 512;
+mapCanvas.height = 480;
+
+//CREATES COORDINATES ARRAY AND HASVISTIED ARRAY FOR ROOM GRID
+var grid = [];
+var hasVisited = [];
+for(var x = 0; x <= roomSize; x++) {
+    grid[x] = [];
+    hasVisited[x] = [];
+    for(var y = 0; y <= roomSize; y++){
+        grid[x][y] = [];
+        grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
+        hasVisited[x][y] = false;
+    }
+}
+hasVisited[coord[0]][coord[1]] = true;
+
+var map =  newMaze(floorSize);
+var currentLevel = map[coord[0]][coord[1]];
+
+// var currentLevel = map[0][0];
+// console.log("---", currentLevel);
+
 //PLAYER IMAGE
 var playerImage = new Image();
 playerImage.src = "ressources/images/zombie.png";
 var playerReady = true;
-
-//CREATES COORDINATES ARRAY FOR ROOM GRID
-var grid = [];
-for(var x = 0; x <= roomSize; x++) {
-    grid[x] = [];
-    for(var y = 0; y <= roomSize; y++){
-        grid[x][y] = [];
-        grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
-    }
-}
 
 loadLevelData();
 
@@ -84,8 +92,6 @@ var update = function (modifier) {
             player.x += player.speed * modifier;
 	}
     
-    console.log("coords : " + player.x + ", " + player.y + " and next square = " + getNextSquareType(player.x, player.y));
-    console.log("height : " + (canvas.height - player.height));
     var nextSquare = getNextSquareType(player.x, player.y);
     
     if(nextSquare == "W" || nextSquare == "A" || nextSquare == "S" || nextSquare == "D") {
@@ -138,8 +144,8 @@ function getNextRoom(type) {
             coord[1] += 1;
             break;
     }
-    
-     return map[coord[0]][coord[1]];
+    hasVisited[coord[0]][coord[1]] = true;
+    return map[coord[0]][coord[1]];
 }
 
 function canPassSquare(sym) {
@@ -165,7 +171,7 @@ function enterRoom(entrance, roomId) {
             
         case 1: 
             startX = canvas.width-(player.width);
-            startY = canvas.height/2-player.height;
+            startY = canvas.height/2-(player.height/2);
             break;
             
         case 2: 
@@ -175,7 +181,7 @@ function enterRoom(entrance, roomId) {
             
         case 3:
             startX = player.width;
-            startY = canvas.height/2-player.height;
+            startY = canvas.height/2-(player.height/2);
             break;
     }
     
@@ -191,7 +197,6 @@ function getNextSquareType(x, y){
     var col = Math.floor(x/(canvas.width/roomSize))+1;
     var row = Math.floor(y/(canvas.width/roomSize))+1;
     
-    console.log("in this case Y = "+y)
     if(y >= canvas.height-(player.height)) row = roomSize-1;
     
     if(col < 0) col = 0;
@@ -261,6 +266,7 @@ function loadLevelData() {
 }
 
 function drawRoom() {
+    drawMap();
     for(var x = 0; x <= roomSize; x++) {
         for(var y = 0; y <= roomSize; y++){
            ctx.drawImage(
@@ -307,13 +313,16 @@ reset();
 main();
 
 
-function newMaze(x, y) {
-
+function newMaze(floorSize) {
+    
     // Establish variables and starting grid
+    var x = floorSize;
+    var y = floorSize;
     var totalCells = x*y;
     var map = [];
     var cells = new Array();
     var unvis = new Array();
+    
     for (var i = 0; i < y; i++) {
         cells[i] = new Array();
         unvis[i] = new Array();
@@ -340,7 +349,9 @@ function newMaze(x, y) {
         
         // Determine if each neighboring cell is in game grid, and whether it has already been checked
         for (var l = 0; l < 4; l++) {
-            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { neighbors.push(pot[l]); }
+            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { 
+                neighbors.push(pot[l]); 
+            }
         }
         
         // If at least one active neighboring cell has been found
@@ -363,26 +374,73 @@ function newMaze(x, y) {
             currentCell = path.pop();
         }
     }
-    for (var i = 0; i < cells.length; i++) {
-        $('#maze > tbody').append("<tr>");
-        for (var j = 0; j < cells[i].length; j++) {
-            var selector = i+"-"+j;
-            $('#maze > tbody').append("<td id='"+selector+"'>&nbsp;</td>");
-            if (cells[i][j][0] == 0) { $('#'+selector).css('border-top', '2px solid black'); }
-            if (cells[i][j][1] == 0) { $('#'+selector).css('border-right', '2px solid black'); }
-            if (cells[i][j][2] == 0) { $('#'+selector).css('border-bottom', '2px solid black'); }
-            if (cells[i][j][3] == 0) { $('#'+selector).css('border-left', '2px solid black'); }
-
-        }
-        $('#maze > tbody').append("</tr>");
-    }
+    
     for (let i = 0; i < cells.length; i++) {
         map[i] = [];
         for(let j = 0; j < cells.length; j++) {
             map[i][j] = cells[i][j].join('')
+            console.log(cells[i][j]);
+            console.log(map[i][j]);
         }
     }
-   // return map;
-    return map
+    return map;
 }
 
+function drawMap() {
+    
+    var tileWidth = mapCanvas.width/floorSize;
+    var tileHeight = mapCanvas.height/floorSize;
+    
+    var playerPos = new Image();
+    
+    
+    var roomString = "0000";
+    
+    playerPos.src = "ressources/images/youAreHere.png";
+    
+    
+    //console.log(coord[0] + " : " + coord[1]);    
+     console.log(map);
+    
+    for(var x = 0; x < floorSize; x++) {
+        
+        for(var y = 0; y < floorSize; y++){
+            
+            if(hasVisited[x][y]) {
+                
+                roomString = "0000";      
+                roomString = setCharAt(roomString, 0, map[x][y].charAt(0));
+                roomString = setCharAt(roomString, 1, map[x][y].charAt(1));
+                roomString = setCharAt(roomString, 2, map[x][y].charAt(2));
+                roomString = setCharAt(roomString, 3, map[x][y].charAt(3));
+                
+            } else roomString = "unVisited";
+            
+            var roomImage = new Image();
+            roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
+            
+            ctxMap.drawImage(
+                                    roomImage,        //image
+                                    tileWidth*y,    //coord x
+                                    tileHeight*x,   //coord y
+                                    tileWidth,      //width 
+                                    tileHeight      //height
+                                );
+            
+            if(x == coord[0] && y == coord[1]) {
+                ctxMap.drawImage(
+                                    playerPos,                      //image
+                                    (tileWidth*y)+tileWidth/4,      //coord x
+                                    (tileHeight*x)+tileHeight/4,    //coord y
+                                    tileWidth/2,                    //width 
+                                    tileHeight/2                    //height
+                                );
+            }
+        }
+    }
+}
+
+function setCharAt(str,index,chr) {
+	if(index > str.length-1) return str;
+	return str.substr(0,index) + chr + str.substr(index+1);
+}
