@@ -10,7 +10,7 @@ var player = {
 var then = Date.now();
 var keysDown = {};
 var roomSize = 20;
-var floorSize = 5;
+var floorSize = 10;
 var coord = [0, 0];
 //var currentLevel = "test";
 
@@ -27,19 +27,19 @@ mapCanvas.height = 480;
 
 //CREATES COORDINATES ARRAY AND HASVISTIED ARRAY FOR ROOM GRID
 var grid = [];
-var hasVisited = [];
 for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
-    hasVisited[x] = [];
     for(var y = 0; y <= roomSize; y++){
         grid[x][y] = [];
         grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
-        hasVisited[x][y] = false;
     }
 }
+
+
+var hasVisited = [];
+var map =  newMaze(floorSize);
 hasVisited[coord[0]][coord[1]] = true;
 
-var map =  newMaze(floorSize);
 var currentLevel = map[coord[0]][coord[1]];
 
 // var currentLevel = map[0][0];
@@ -326,9 +326,11 @@ function newMaze(floorSize) {
     for (var i = 0; i < y; i++) {
         cells[i] = new Array();
         unvis[i] = new Array();
+        hasVisited[i] = [];
         for (var j = 0; j < x; j++) {
             cells[i][j] = [0,0,0,0];
             unvis[i][j] = true;
+            hasVisited[i][j] = false;
         }
     }
     
