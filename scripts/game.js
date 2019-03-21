@@ -10,6 +10,8 @@ var player = {
 var then = Date.now();
 var keysDown = {};
 var roomSize = 20;
+var floorSize = 5;
+var coord = [0, 0];
 //var currentLevel = "test";
 
 //INITIALISE CANVAS
@@ -23,18 +25,20 @@ var ctxMap = mapCanvas.getContext("2d");
 mapCanvas.width = 512;
 mapCanvas.height = 480;
 
-//CREATES COORDINATES ARRAY FOR ROOM GRID
+//CREATES COORDINATES ARRAY AND HASVISTIED ARRAY FOR ROOM GRID
 var grid = [];
+var hasVisited = [];
 for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
+    hasVisited[x] = [];
     for(var y = 0; y <= roomSize; y++){
         grid[x][y] = [];
         grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
+        hasVisited[x][y] = false;
     }
 }
+hasVisited[coord[0]][coord[1]] = true;
 
-var floorSize = 10;
-var coord = [0, 0];
 var map =  newMaze(floorSize);
 var currentLevel = map[coord[0]][coord[1]];
 
@@ -140,8 +144,8 @@ function getNextRoom(type) {
             coord[1] += 1;
             break;
     }
-    
-     return map[coord[0]][coord[1]];
+    hasVisited[coord[0]][coord[1]] = true;
+    return map[coord[0]][coord[1]];
 }
 
 function canPassSquare(sym) {
@@ -371,28 +375,15 @@ function newMaze(floorSize) {
         }
     }
     
-    for (var i = 0; i < cells.length; i++) {
-        $('#maze > tbody').append("<tr>");
-        for (var j = 0; j < cells[i].length; j++) {
-            var selector = i+"-"+j;
-            $('#maze > tbody').append("<td id='"+selector+"'>&nbsp;</td>");
-            if (cells[i][j][0] == 0) { $('#'+selector).css('border-top', '2px solid black'); }
-            if (cells[i][j][1] == 0) { $('#'+selector).css('border-right', '2px solid black'); }
-            if (cells[i][j][2] == 0) { $('#'+selector).css('border-bottom', '2px solid black'); }
-            if (cells[i][j][3] == 0) { $('#'+selector).css('border-left', '2px solid black'); }
-
-        }
-        $('#maze > tbody').append("</tr>");
-    }
-    
     for (let i = 0; i < cells.length; i++) {
         map[i] = [];
         for(let j = 0; j < cells.length; j++) {
             map[i][j] = cells[i][j].join('')
+            console.log(cells[i][j]);
+            console.log(map[i][j]);
         }
     }
-    drawMap();
-    return map
+    return map;
 }
 
 function drawMap() {
@@ -401,26 +392,43 @@ function drawMap() {
     var tileHeight = mapCanvas.height/floorSize;
     
     var playerPos = new Image();
-    var unknown = new Image();
+    
+    
+    var roomString = "0000";
     
     playerPos.src = "ressources/images/youAreHere.png";
-    unknown.src = "ressources/images/questionMark.png";
     
-    console.log(coord[0] + " : " + coord[1]);
+    
+    //console.log(coord[0] + " : " + coord[1]);    
+     console.log(map);
     
     for(var x = 0; x < floorSize; x++) {
+        
         for(var y = 0; y < floorSize; y++){
+            
+            if(hasVisited[x][y]) {
+                
+                roomString = "0000";      
+                roomString = setCharAt(roomString, 0, map[x][y].charAt(0));
+                roomString = setCharAt(roomString, 1, map[x][y].charAt(1));
+                roomString = setCharAt(roomString, 2, map[x][y].charAt(2));
+                roomString = setCharAt(roomString, 3, map[x][y].charAt(3));
+                
+            } else roomString = "unVisited";
+            
+            var roomImage = new Image();
+            roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
+            
             ctxMap.drawImage(
-                                unknown,        //image
-                                tileWidth*y,    //coord x
-                                tileHeight*x,   //coord y
-                                tileWidth,      //width 
-                                tileHeight      //height
-                            );
+                                    roomImage,        //image
+                                    tileWidth*y,    //coord x
+                                    tileHeight*x,   //coord y
+                                    tileWidth,      //width 
+                                    tileHeight      //height
+                                );
+            
             if(x == coord[0] && y == coord[1]) {
-                console.log("FOUND PLAYER AT "+ coord[0] + " : " + coord[1]);
-                console.log("drawing ");
-                 ctxMap.drawImage(
+                ctxMap.drawImage(
                                     playerPos,                      //image
                                     (tileWidth*y)+tileWidth/4,      //coord x
                                     (tileHeight*x)+tileHeight/4,    //coord y
@@ -430,4 +438,9 @@ function drawMap() {
             }
         }
     }
+}
+
+function setCharAt(str,index,chr) {
+	if(index > str.length-1) return str;
+	return str.substr(0,index) + chr + str.substr(index+1);
 }
