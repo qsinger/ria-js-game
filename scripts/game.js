@@ -316,7 +316,8 @@ function main() {
 }
 
 reset();
-addRoomToMap();
+//addRoomToMap();   just for debugging, uncomment this and comment showAllMap for playing
+showAllMap();
 main();
 
 
@@ -458,6 +459,37 @@ function clearPlayerMarker(x, y) {
                             tileWidth,                        //width 
                             tileHeight                        //height
                         );
+    }
+}
+
+function showAllMap() {
+    var tileWidth = mapCanvas.width/floorSize;
+    var tileHeight = mapCanvas.height/floorSize;
+    var roomString = "0000";
+    var roomImage;
+    
+    for(var x = 0; x < floorSize; x++) {
+        for(var y = 0; y < floorSize; y++){
+            
+            roomString = setCharAt(roomString, 0, map[x][y].charAt(0));
+            roomString = setCharAt(roomString, 1, map[x][y].charAt(1));
+            roomString = setCharAt(roomString, 2, map[x][y].charAt(2));
+            roomString = setCharAt(roomString, 3, map[x][y].charAt(3));
+
+            roomImage = new Image();
+            roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
+            roomImage.coords = {x: x, y: y};
+            
+            roomImage.onload=function(){
+                ctxMap.drawImage(
+                                    this,                                       //image
+                                    mapGrid[this.coords.y][this.coords.x][0],   //coord x       why are the y and x reversed here?!!?!?
+                                    mapGrid[this.coords.y][this.coords.x][1],   //coord y
+                                    tileWidth,                                  //width 
+                                    tileHeight                                  //height
+                                );
+            }
+        }
     }
 }
 
