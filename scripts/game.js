@@ -12,7 +12,6 @@ var keysDown = {};
 var roomSize = 20;
 var floorSize = 5;
 var coord = [0, 0];
-//var currentLevel = "test";
 
 //INITIALISE CANVAS
 var canvas = document.getElementById("game");
@@ -46,14 +45,8 @@ for(var x = 0; x <= floorSize; x++) {
     }
 }
 
-//var hasVisited = [];
 var map =  newMaze(floorSize);
-//hasVisited[coord[0]][coord[1]] = true;
-
 var currentLevel = map[coord[0]][coord[1]];
-
-// var currentLevel = map[0][0];
-// console.log("---", currentLevel);
 
 //PLAYER IMAGE
 var playerImage = new Image();
@@ -82,7 +75,6 @@ var update = function (modifier) {
     
     //print coordinates for testing :
     //console.log("X = "+player.x+"    Y = "+player.y);
-    
     
     //LOOK AT LEFT RIGHT POINT POSITIONING
 	if (38 in keysDown || 87 in keysDown) { // Player holding up
@@ -157,7 +149,6 @@ function getNextRoom(type) {
             coord[1] += 1;
             break;
     }
-    //hasVisited[coord[0]][coord[1]] = true;
     addRoomToMap();
     return map[coord[0]][coord[1]];
 }
@@ -208,6 +199,7 @@ function enterRoom(entrance, roomId) {
 }
 
 function getNextSquareType(x, y){
+    
     var col = Math.floor(x/(canvas.width/roomSize))+1;
     var row = Math.floor(y/(canvas.width/roomSize))+1;
     
@@ -401,6 +393,7 @@ function newMaze(floorSize) {
     return map;
 }
 
+//adds current room to map
 function addRoomToMap() {
     
     var tileWidth = mapCanvas.width/floorSize;
@@ -440,6 +433,8 @@ function addRoomToMap() {
     }
 }
 
+//redraws a room to remove the player marker 
+//called in enterRoom and just before main
 function clearPlayerMarker(x, y) {
     
     var tileWidth = mapCanvas.width/floorSize;
@@ -455,7 +450,7 @@ function clearPlayerMarker(x, y) {
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
     roomImage.onload=function(){
-        console.log("clearing player marker :  "+coord[0]+", "+coord[1]);
+        
         ctxMap.drawImage(
                             roomImage,                        //image
                             mapGrid[y][x][0],   //coord x
