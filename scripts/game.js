@@ -30,18 +30,22 @@ let ctxMap = mapCanvas.getContext("2d");
 //CREATES COORDINATES ARRAY FOR ROOMS
 let grid = [];
 let mapGrid = [];
-for(var x = 0; x <= roomSize; x++) {
+for(var x = 0; x <= roomSize; x++) 
+{
     grid[x] = [];
-    for(var y = 0; y <= roomSize; y++){
+    for(var y = 0; y <= roomSize; y++)
+    {
         grid[x][y] = [];
         grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
     }
 }
 
 //CREATES COORDINATES ARRAY FOR MAP
-for(var x = 0; x <= floorSize; x++) {
+for(var x = 0; x <= floorSize; x++) 
+{
     mapGrid[x] = [];
-    for(var y = 0; y <= floorSize; y++){
+    for(var y = 0; y <= floorSize; y++)
+    {
         mapGrid[x][y] = [];
         mapGrid[x][y] = [(mapCanvas.width/floorSize)*x, (mapCanvas.height/floorSize)*y];
     }
@@ -98,6 +102,7 @@ var update = function (modifier) {
     
     var nextSquare = getNextSquareType(player.x, player.y);
     
+    //Test for if next square is a door
     if(nextSquare == "W" || nextSquare == "A" || nextSquare == "S" || nextSquare == "D") {
         enterRoom(getEntrancePos(nextSquare), getNextRoom(nextSquare));
     }
@@ -118,7 +123,8 @@ var update = function (modifier) {
 };
 
 function getEntrancePos(type) {
-    switch(type) {
+    switch(type) 
+    {
         case "W" :
             return 2;
         case "A" :
@@ -134,7 +140,8 @@ function getNextRoom(type) {
     
     clearPlayerMarker(coord[0], coord[1]);
     
-    switch(type) {
+    switch(type) 
+    {
         case "W" :
             coord[0] -= 1;
             break;
@@ -157,7 +164,7 @@ function getNextRoom(type) {
 
 function canPassSquare(sym) {
     if(sym == "X")
-        return false
+        return false;
     else 
         return true;
 }
@@ -170,7 +177,8 @@ function enterRoom(entrance, roomId) {
     // 1 : right
     // 2 : bottom
     // 3 : left
-    switch(entrance) {
+    switch(entrance) 
+    {
         case 0:
             startX = canvas.width/2;
             startY = canvas.height/roomSize;
@@ -202,21 +210,25 @@ function enterRoom(entrance, roomId) {
 
 function getNextSquareType(x, y){
     
-    var col = Math.floor(x/(canvas.width/roomSize))+1;
-    var row = Math.floor(y/(canvas.width/roomSize))+1;
+    let col = Math.floor(x/(canvas.width/roomSize))+1;
+    let row = Math.floor(y/(canvas.width/roomSize))+1;
     
-    if(y >= canvas.height-(player.height)) row = roomSize-1;
+    if(y >= canvas.height-(player.height)) 
+        row = roomSize-1;
     
-    if(col < 0) col = 0;
-    if(row < 0) row = 0;
+    if(col < 0) 
+        col = 0;
+    
+    if(row < 0) 
+        row = 0;
     
     return grid[col][row][2];
 }
 
 function getImage(sym) {
     var img = new Image();
-    switch(sym) {
-        
+    switch(sym) 
+    {
         case "@":
             img.src = "ressources/images/tile_1.jpg";
             break;
@@ -263,10 +275,11 @@ function loadLevelData() {
         
         //transforms character list into [][]
         //dont try and understand how this works unless you really want to go insane
-        for(var i = 0; i < data.length; i++){
-            if(i > (roomSize-1) && i%roomSize == 0) {
+        for(var i = 0; i < data.length; i++)
+        {
+            if(i > (roomSize-1) && i%roomSize == 0)
                 x++;
-            }
+                
             y = i-(roomSize*x);
             grid[y][x][2] = data[i];
         }
@@ -275,8 +288,10 @@ function loadLevelData() {
 
 function drawRoom() {
     
-    for(var x = 0; x <= roomSize; x++) {
-        for(var y = 0; y <= roomSize; y++){
+    for(var x = 0; x <= roomSize; x++) 
+    {
+        for(var y = 0; y <= roomSize; y++)
+        {
            ctx.drawImage(
                 getImage(grid[x][y][2]),    //image
                 grid[x][y][0],              //coord x
@@ -291,7 +306,8 @@ function drawRoom() {
 //DRAW
 function render() {
     drawRoom();
-	if (playerReady) {
+	if (playerReady) 
+    {
 		ctx.drawImage(
             playerImage, 
             player.x, 
@@ -333,14 +349,16 @@ function newMaze(floorSize) {
     let cells = new Array();
     let unvis = new Array();
     
-    for (var i = 0; i < y; i++) {
+    for (var i = 0; i < y; i++) 
+    {
         cells[i] = new Array();
         unvis[i] = new Array();
-        //hasVisited[i] = [];
-        for (var j = 0; j < x; j++) {
+        
+        for (var j = 0; j < x; j++) 
+        {
             cells[i][j] = [0,0,0,0];
             unvis[i][j] = true;
-            //hasVisited[i][j] = false;
+            
         }
     }
     
@@ -351,23 +369,26 @@ function newMaze(floorSize) {
     let visited = 1;
     
     // Loop through all available cell positions
-    while (visited < totalCells) {
+    while (visited < totalCells) 
+    {
         // Determine neighboring cells
-        var pot = [[currentCell[0]-1, currentCell[1], 0, 2],
-                [currentCell[0], currentCell[1]+1, 1, 3],
-                [currentCell[0]+1, currentCell[1], 2, 0],
-                [currentCell[0], currentCell[1]-1, 3, 1]];
-        var neighbors = new Array();
+        let pot = [ [currentCell[0]-1, currentCell[1], 0, 2],
+                    [currentCell[0], currentCell[1]+1, 1, 3],
+                    [currentCell[0]+1, currentCell[1], 2, 0],
+                    [currentCell[0], currentCell[1]-1, 3, 1]];
+        
+        let neighbors = new Array();
         
         // Determine if each neighboring cell is in game grid, and whether it has already been checked
-        for (var l = 0; l < 4; l++) {
-            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { 
-                neighbors.push(pot[l]); 
-            }
+        for (var l = 0; l < 4; l++) 
+        {
+            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]])
+                neighbors.push(pot[l]);
         }
         
         // If at least one active neighboring cell has been found
-        if (neighbors.length) {
+        if (neighbors.length) 
+        {
             // Choose one of the neighbors at random
             next = neighbors[Math.floor(Math.random()*neighbors.length)];
             
@@ -382,16 +403,16 @@ function newMaze(floorSize) {
             path.push(currentCell);
         }
         // Otherwise go back up a step and keep going
-        else {
+        else 
             currentCell = path.pop();
-        }
     }
     
-    for (let i = 0; i < cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) 
+    {
         map[i] = [];
-        for(let j = 0; j < cells.length; j++) {
+        
+        for(let j = 0; j < cells.length; j++)
             map[i][j] = cells[i][j].join('');
-        }
     }
     return map;
 }
@@ -451,7 +472,7 @@ function clearPlayerMarker(x, y) {
     
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
-    roomImage.onload=function(){
+    roomImage.onload=function() {
         
         ctxMap.drawImage(
                             roomImage,                        //image
@@ -469,9 +490,10 @@ function showAllMap() {
     let roomString = "0000";
     let roomImage;
     
-    for(var x = 0; x < floorSize; x++) {
-        for(var y = 0; y < floorSize; y++){
-            
+    for(var x = 0; x < floorSize; x++) 
+    {
+        for(var y = 0; y < floorSize; y++)
+        {
             roomString = setCharAt(roomString, 0, map[x][y].charAt(0));
             roomString = setCharAt(roomString, 1, map[x][y].charAt(1));
             roomString = setCharAt(roomString, 2, map[x][y].charAt(2));
@@ -495,6 +517,7 @@ function showAllMap() {
 }
 
 function setCharAt(str,index,chr) {
-	if(index > str.length-1) return str;
+	if(index > str.length-1) 
+        return str;
 	return str.substr(0,index) + chr + str.substr(index+1);
 }
