@@ -9,13 +9,13 @@ var player = {
 
 var then = Date.now();
 var keysDown = {};
-var roomSize = 20;
-var floorSize = 5;
+const roomSize = 20;
+const floorSize = 5;
 var coord = [0, 0];
 
 //INITIALISE CANVAS
-var canvas = document.getElementById("game");
-var ctx = canvas.getContext("2d");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
 
@@ -402,7 +402,6 @@ function addRoomToMap() {
     var roomString = "0000";
     
     var playerPos = new Image();
-    
     
     roomString = setCharAt(roomString, 0, map[coord[0]][coord[1]].charAt(0));
     roomString = setCharAt(roomString, 1, map[coord[0]][coord[1]].charAt(1));
