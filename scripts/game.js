@@ -9,10 +9,10 @@ var player = {
 
 const roomSize = 20;
 
-var floorSize = 5;
-var then = Date.now();
-var keysDown = {};
-var coord = [0, 0];
+let floorSize = 5;
+let then = Date.now();
+let keysDown = {};
+let coord = [0, 0];
 
 //INITIALISE CANVAS
 const canvas = document.getElementById("game");
@@ -20,15 +20,16 @@ const ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
 
-var mapCanvas = document.getElementById("map");
+let mapCanvas = document.getElementById("map");
 mapCanvas.width = 512;
 mapCanvas.height = 480;
-var ctxMap = mapCanvas.getContext("2d");
+
+let ctxMap = mapCanvas.getContext("2d");
 
 
 //CREATES COORDINATES ARRAY FOR ROOMS
-var grid = [];
-var mapGrid = [];
+let grid = [];
+let mapGrid = [];
 for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
     for(var y = 0; y <= roomSize; y++){
@@ -46,13 +47,13 @@ for(var x = 0; x <= floorSize; x++) {
     }
 }
 
-var map =  newMaze(floorSize);
-var currentLevel = map[coord[0]][coord[1]];
+let map =  newMaze(floorSize);
+let currentLevel = map[coord[0]][coord[1]];
 
 //PLAYER IMAGE
-var playerImage = new Image();
+let playerImage = new Image();
 playerImage.src = "ressources/images/zombie.png";
-var playerReady = true;
+let playerReady = true;
 
 loadLevelData();
 
@@ -66,7 +67,7 @@ addEventListener("keyup", function (e) {
 
 
 //reset player position to middle
-var reset = function () {
+let reset = function () {
     player.x = canvas.width / 2;
 	player.y = canvas.height / 2;
 };
@@ -325,12 +326,12 @@ main();
 function newMaze(floorSize) {
     
     // Establish variables and starting grid
-    var x = floorSize;
-    var y = floorSize;
-    var totalCells = x*y;
-    var map = [];
-    var cells = new Array();
-    var unvis = new Array();
+    let x = floorSize;
+    let y = floorSize;
+    let totalCells = x*y;
+    let map = [];
+    let cells = new Array();
+    let unvis = new Array();
     
     for (var i = 0; i < y; i++) {
         cells[i] = new Array();
@@ -344,10 +345,10 @@ function newMaze(floorSize) {
     }
     
     // Set a random position to start from
-    var currentCell = [Math.floor(Math.random()*y), Math.floor(Math.random()*x)];
-    var path = [currentCell];
+    let currentCell = [Math.floor(Math.random()*y), Math.floor(Math.random()*x)];
+    let path = [currentCell];
     unvis[currentCell[0]][currentCell[1]] = false;
-    var visited = 1;
+    let visited = 1;
     
     // Loop through all available cell positions
     while (visited < totalCells) {
@@ -398,18 +399,18 @@ function newMaze(floorSize) {
 //adds current room to map
 function addRoomToMap() {
     
-    var tileWidth = mapCanvas.width/floorSize;
-    var tileHeight = mapCanvas.height/floorSize;
-    var roomString = "0000";
+    let tileWidth = mapCanvas.width/floorSize;
+    let tileHeight = mapCanvas.height/floorSize;
+    let roomString = "0000";
     
-    var playerPos = new Image();
+    let playerPos = new Image();
+    let roomImage = new Image();
     
     roomString = setCharAt(roomString, 0, map[coord[0]][coord[1]].charAt(0));
     roomString = setCharAt(roomString, 1, map[coord[0]][coord[1]].charAt(1));
     roomString = setCharAt(roomString, 2, map[coord[0]][coord[1]].charAt(2));
     roomString = setCharAt(roomString, 3, map[coord[0]][coord[1]].charAt(3));
     
-    var roomImage = new Image();
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
     roomImage.onload=function(){
@@ -438,16 +439,16 @@ function addRoomToMap() {
 //called in enterRoom and just before main
 function clearPlayerMarker(x, y) {
     
-    var tileWidth = mapCanvas.width/floorSize;
-    var tileHeight = mapCanvas.height/floorSize;
-    var roomString = "0000";
+    let tileWidth = mapCanvas.width/floorSize;
+    let tileHeight = mapCanvas.height/floorSize;
+    let roomString = "0000";
+    let roomImage = new Image();
     
     roomString = setCharAt(roomString, 0, map[coord[0]][coord[1]].charAt(0));
     roomString = setCharAt(roomString, 1, map[coord[0]][coord[1]].charAt(1));
     roomString = setCharAt(roomString, 2, map[coord[0]][coord[1]].charAt(2));
     roomString = setCharAt(roomString, 3, map[coord[0]][coord[1]].charAt(3));
     
-    var roomImage = new Image();
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
     roomImage.onload=function(){
@@ -463,10 +464,10 @@ function clearPlayerMarker(x, y) {
 }
 
 function showAllMap() {
-    var tileWidth = mapCanvas.width/floorSize;
-    var tileHeight = mapCanvas.height/floorSize;
-    var roomString = "0000";
-    var roomImage;
+    let tileWidth = mapCanvas.width/floorSize;
+    let tileHeight = mapCanvas.height/floorSize;
+    let roomString = "0000";
+    let roomImage;
     
     for(var x = 0; x < floorSize; x++) {
         for(var y = 0; y < floorSize; y++){
