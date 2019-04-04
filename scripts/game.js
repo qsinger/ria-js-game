@@ -7,10 +7,11 @@ var player = {
     height: 50
 };
 
+const roomSize = 20;
+
+var floorSize = 5;
 var then = Date.now();
 var keysDown = {};
-const roomSize = 20;
-const floorSize = 5;
 var coord = [0, 0];
 
 //INITIALISE CANVAS
