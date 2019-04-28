@@ -1,3 +1,4 @@
+
 var player = {
 	speed: 256,
 	x: 0,
@@ -7,17 +8,21 @@ var player = {
 };
 
 const roomSize = 20;
+let cmd = "room";
+let currentFloor = 1;
 
-let floorSize = 5;
+let floorSize = 3;
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
+let exit = [false, false];
 
 //INITIALISE CANVAS
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
+
 
 let mapCanvas = document.getElementById("map");
 mapCanvas.width = 512;
@@ -29,22 +34,18 @@ let ctxMap = mapCanvas.getContext("2d");
 //CREATES COORDINATES ARRAY FOR ROOMS
 let grid = [];
 let mapGrid = [];
-for(var x = 0; x <= roomSize; x++) 
-{
+for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
-    for(var y = 0; y <= roomSize; y++)
-    {
+    for(var y = 0; y <= roomSize; y++){
         grid[x][y] = [];
         grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
     }
 }
 
 //CREATES COORDINATES ARRAY FOR MAP
-for(var x = 0; x <= floorSize; x++) 
-{
+for(var x = 0; x <= floorSize; x++) {
     mapGrid[x] = [];
-    for(var y = 0; y <= floorSize; y++)
-    {
+    for(var y = 0; y <= floorSize; y++){
         mapGrid[x][y] = [];
         mapGrid[x][y] = [(mapCanvas.width/floorSize)*x, (mapCanvas.height/floorSize)*y];
     }
@@ -76,7 +77,7 @@ let reset = function () {
 };
 
 //CONTROLS
-var update = function (modifier) {
+var update = async function (modifier) {
     
     //print coordinates for testing :
     //console.log("X = "+player.x+"    Y = "+player.y);
@@ -101,9 +102,20 @@ var update = function (modifier) {
     
     var nextSquare = getNextSquareType(player.x, player.y);
     
-    //Test for if next square is a door
-    if(nextSquare == "W" || nextSquare == "A" || nextSquare == "S" || nextSquare == "D") {
-        enterRoom(getEntrancePos(nextSquare), getNextRoom(nextSquare));
+    //defines what to do if player touches a roomChange (WASD) or the exit (exit)
+    switch(nextSquare) {
+        case "W":
+        case "A":
+        case "S":
+        case "D":
+            enterRoom(getEntrancePos(nextSquare), getNextRoom(nextSquare));
+            break;
+            
+        case "exit":
+            console.log("was an exit");
+            cmd = "exit";
+            await sleep(5000);
+            break;
     }
     
     //main walls collision detection
@@ -122,8 +134,7 @@ var update = function (modifier) {
 };
 
 function getEntrancePos(type) {
-    switch(type) 
-    {
+    switch(type) {
         case "W" :
             return 2;
         case "A" :
@@ -139,8 +150,7 @@ function getNextRoom(type) {
     
     clearPlayerMarker(coord[0], coord[1]);
     
-    switch(type) 
-    {
+    switch(type) {
         case "W" :
             coord[0] -= 1;
             break;
@@ -163,7 +173,7 @@ function getNextRoom(type) {
 
 function canPassSquare(sym) {
     if(sym == "X")
-        return false;
+        return false
     else 
         return true;
 }
@@ -176,8 +186,7 @@ function enterRoom(entrance, roomId) {
     // 1 : right
     // 2 : bottom
     // 3 : left
-    switch(entrance) 
-    {
+    switch(entrance) {
         case 0:
             startX = canvas.width/2;
             startY = canvas.height/roomSize;
@@ -209,25 +218,25 @@ function enterRoom(entrance, roomId) {
 
 function getNextSquareType(x, y){
     
-    let col = Math.floor(x/(canvas.width/roomSize))+1;
-    let row = Math.floor(y/(canvas.width/roomSize))+1;
+    var col = Math.floor(x/(canvas.width/roomSize))+1;
+    var row = Math.floor(y/(canvas.width/roomSize))+1;
     
-    if(y >= canvas.height-(player.height)) 
-        row = roomSize-1;
+    //if the next tile is the exit
+    if(isThisRoomTheExit() && isThisTheMiddleOfTheRoom(row, col))
+        return "exit";
     
-    if(col < 0) 
-        col = 0;
+    if(y >= canvas.height-(player.height)) row = roomSize-1;
     
-    if(row < 0) 
-        row = 0;
+    if(col < 0) col = 0;
+    if(row < 0) row = 0;
     
     return grid[col][row][2];
 }
 
 function getImage(sym) {
     var img = new Image();
-    switch(sym) 
-    {
+    switch(sym) {
+        
         case "@":
             img.src = "ressources/images/tile_1.jpg";
             break;
@@ -274,11 +283,10 @@ function loadLevelData() {
         
         //transforms character list into [][]
         //dont try and understand how this works unless you really want to go insane
-        for(var i = 0; i < data.length; i++)
-        {
-            if(i > (roomSize-1) && i%roomSize == 0)
+        for(var i = 0; i < data.length; i++){
+            if(i > (roomSize-1) && i%roomSize == 0) {
                 x++;
-                
+            }
             y = i-(roomSize*x);
             grid[y][x][2] = data[i];
         }
@@ -287,26 +295,93 @@ function loadLevelData() {
 
 function drawRoom() {
     
-    for(var x = 0; x <= roomSize; x++) 
-    {
-        for(var y = 0; y <= roomSize; y++)
-        {
-           ctx.drawImage(
-                getImage(grid[x][y][2]),    //image
-                grid[x][y][0],              //coord x
-                grid[x][y][1],              //coord y
-                canvas.width/roomSize,      //width 
-                canvas.height/roomSize      //height
-           );
+    for(var x = 0; x <= roomSize; x++) {
+        for(var y = 0; y <= roomSize; y++){
+            
+            if(!isThisRoomTheExit()) {
+                ctx.drawImage(
+                    getImage(grid[x][y][2]),    //image
+                    grid[x][y][0],              //coord x
+                    grid[x][y][1],              //coord y
+                    canvas.width/roomSize,      //width 
+                    canvas.height/roomSize      //height
+               );
+            } else if(!isThisTheMiddleOfTheRoom(x, y) ) {
+               ctx.drawImage(
+                    getImage(grid[x][y][2]),    //image
+                    grid[x][y][0],              //coord x
+                    grid[x][y][1],              //coord y
+                    canvas.width/roomSize,      //width 
+                    canvas.height/roomSize      //height
+               );
+            }
+        }
+    }
+
+    //draws stairs in the middle of the room
+    if(isThisRoomTheExit()) {
+        let stairs = new Image();
+        stairs.src = "ressources/images/stairs.jpg";
+        stairs.onload=function() {
+            for(var x = roomSize/2-1; x < roomSize/2; x++) {
+                for(var y = roomSize/2-1; y < roomSize/2; y++) {
+                    ctx.drawImage(
+                        stairs,                         //image
+                        grid[x][y][0],                //coord x
+                        grid[x][y][1],                //coord y
+                        (canvas.width/roomSize)*2,      //width 
+                        (canvas.height/roomSize)*2      //height
+                   );
+                }
+            }
+            
         }
     }
 }
 
+function isThisRoomTheExit() {
+    if(coord[0] == exit[0] && coord[1] == exit[1])
+        return true;
+    return false;
+}
+
+function isThisTheMiddleOfTheRoom(x, y) {
+    let min = roomSize/2-1;
+    let max = roomSize/2;
+    if(x < min || x > max || y < min || y > max)
+        return false;
+    return true;
+}
+
+function nextFloor() {
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.stroke();
+    
+    var message ="You found the exit!";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "normal 36px Arial";
+    ctx.fillText(message, canvas.width/2, canvas.height/2);
+    ctx.stroke();
+}
+
 //DRAW
-function render() {
-    drawRoom();
-	if (playerReady) 
-    {
+async function render() {
+    
+    switch(cmd) {
+        case "room":
+            drawRoom();
+            break;
+            
+        case "exit":
+            playerReady = false;
+            nextFloor();
+            break;
+    }
+    
+	if (playerReady) {
 		ctx.drawImage(
             playerImage, 
             player.x, 
@@ -348,16 +423,14 @@ function newMaze(floorSize) {
     let cells = new Array();
     let unvis = new Array();
     
-    for (var i = 0; i < y; i++) 
-    {
+    for (var i = 0; i < y; i++) {
         cells[i] = new Array();
         unvis[i] = new Array();
-        
-        for (var j = 0; j < x; j++) 
-        {
+        //hasVisited[i] = [];
+        for (var j = 0; j < x; j++) {
             cells[i][j] = [0,0,0,0];
             unvis[i][j] = true;
-            
+            //hasVisited[i][j] = false;
         }
     }
     
@@ -368,26 +441,27 @@ function newMaze(floorSize) {
     let visited = 1;
     
     // Loop through all available cell positions
-    while (visited < totalCells) 
-    {
-        // Determine neighboring cells
-        let pot = [ [currentCell[0]-1, currentCell[1], 0, 2],
-                    [currentCell[0], currentCell[1]+1, 1, 3],
-                    [currentCell[0]+1, currentCell[1], 2, 0],
-                    [currentCell[0], currentCell[1]-1, 3, 1]];
+    while (visited < totalCells) {
         
-        let neighbors = new Array();
+        // Determine neighboring cells
+        var pot =   [
+                        [currentCell[0]-1, currentCell[1], 0, 2],
+                        [currentCell[0], currentCell[1]+1, 1, 3],
+                        [currentCell[0]+1, currentCell[1], 2, 0],
+                        [currentCell[0], currentCell[1]-1, 3, 1]
+                    ];
+        
+        var neighbors = new Array();
         
         // Determine if each neighboring cell is in game grid, and whether it has already been checked
-        for (var l = 0; l < 4; l++) 
-        {
-            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]])
-                neighbors.push(pot[l]);
+        for (var l = 0; l < 4; l++) {
+            if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) { 
+                neighbors.push(pot[l]); 
+            }
         }
         
         // If at least one active neighboring cell has been found
-        if (neighbors.length) 
-        {
+        if (neighbors.length) {
             // Choose one of the neighbors at random
             next = neighbors[Math.floor(Math.random()*neighbors.length)];
             
@@ -402,16 +476,19 @@ function newMaze(floorSize) {
             path.push(currentCell);
         }
         // Otherwise go back up a step and keep going
-        else 
+        else {
+            if(exit[0] == false && exit[1] == false) {
+                exit = [currentCell[0], currentCell[1]];
+            }
             currentCell = path.pop();
+        }
     }
     
-    for (let i = 0; i < cells.length; i++) 
-    {
+    for (let i = 0; i < cells.length; i++) {
         map[i] = [];
-        
-        for(let j = 0; j < cells.length; j++)
+        for(let j = 0; j < cells.length; j++) {
             map[i][j] = cells[i][j].join('');
+        }
     }
     return map;
 }
@@ -419,11 +496,15 @@ function newMaze(floorSize) {
 //adds current room to map
 function addRoomToMap() {
     
+    console.log("exit is "+exit[0]+", "+exit[1]);
+    console.log("coords = ["+exit[0]+", "+exit[1]+"]");
+    
     let tileWidth = mapCanvas.width/floorSize;
     let tileHeight = mapCanvas.height/floorSize;
     let roomString = "0000";
     
     let playerPos = new Image();
+    let exitPos = new Image();
     let roomImage = new Image();
     
     roomString = setCharAt(roomString, 0, map[coord[0]][coord[1]].charAt(0));
@@ -442,16 +523,35 @@ function addRoomToMap() {
                             tileHeight                        //height
                         );
         
+        if(isThisRoomTheExit()) 
+        {
+            console.log("EXIT IS HERE ("+coord[0]+", "+coord[1]+")");
+            exitPos.src = "ressources/images/exit.png";
+            exitPos.onload=function()
+            {
+                ctxMap.drawImage    (
+                                        exitPos,                          //image
+                                        mapGrid[coord[1]][coord[0]][0],   //coord x
+                                        mapGrid[coord[1]][coord[0]][1],   //coord y
+                                        tileWidth,                        //width 
+                                        tileHeight                        //height
+                                    );
+            } 
+        }
+        
         playerPos.src = "ressources/images/youAreHere.png";
-        playerPos.onload=function(){
-        ctxMap.drawImage(
-                            playerPos,                          //image
-                            (tileWidth*coord[1])+tileWidth/4,   //coord x
-                            (tileHeight*coord[0])+tileHeight/4, //coord y
-                            tileWidth/2,                        //width 
-                            tileHeight/2                        //height
-                        );
+        playerPos.onload=function()
+        {
+            ctxMap.drawImage(
+                                playerPos,                          //image
+                                (tileWidth*coord[1])+tileWidth/4,   //coord x
+                                (tileHeight*coord[0])+tileHeight/4, //coord y
+                                tileWidth/2,                        //width 
+                                tileHeight/2                        //height
+                            );
+        
         } 
+       
     }
 }
 
@@ -471,7 +571,7 @@ function clearPlayerMarker(x, y) {
     
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
-    roomImage.onload=function() {
+    roomImage.onload=function(){
         
         ctxMap.drawImage(
                             roomImage,                        //image
@@ -481,6 +581,20 @@ function clearPlayerMarker(x, y) {
                             tileHeight                        //height
                         );
     }
+    
+    if(x == exit[0] && y == exit[1]) {
+        let exitImage = new Image();
+        exitImage.src = "ressources/images/exit.png";
+        exitImage.onload=function() {
+            ctxMap.drawImage(
+                            exitImage,                        //image
+                            mapGrid[y][x][0],               //coord x
+                            mapGrid[y][x][1],               //coord y
+                            tileWidth,                        //width 
+                            tileHeight                        //height
+                        );
+        }
+    }
 }
 
 function showAllMap() {
@@ -488,11 +602,12 @@ function showAllMap() {
     let tileHeight = mapCanvas.height/floorSize;
     let roomString = "0000";
     let roomImage;
+    let exitImage = new Image();
+    exitImage.src = "ressources/images/exit.png";
     
-    for(var x = 0; x < floorSize; x++) 
-    {
-        for(var y = 0; y < floorSize; y++)
-        {
+    for(var x = 0; x < floorSize; x++) {
+        for(var y = 0; y < floorSize; y++){
+            
             roomString = setCharAt(roomString, 0, map[x][y].charAt(0));
             roomString = setCharAt(roomString, 1, map[x][y].charAt(1));
             roomString = setCharAt(roomString, 2, map[x][y].charAt(2));
@@ -511,12 +626,27 @@ function showAllMap() {
                                     tileHeight                                  //height
                                 );
             }
+            
+            if(x == exit[1] && y == exit[0]){
+                exitImage.onload=function() {
+                     ctxMap.drawImage(
+                                    exitImage,                                              //image
+                                    mapGrid[roomImage.coords.y][roomImage.coords.x][0],     //coord x       why are the y and x reversed here?!!?!?
+                                    mapGrid[roomImage.coords.y][roomImage.coords.x][1],     //coord y
+                                    tileWidth,                                              //width 
+                                    tileHeight                                              //height
+                                ); 
+                }
+            }
         }
     }
 }
 
 function setCharAt(str,index,chr) {
-	if(index > str.length-1) 
-        return str;
+	if(index > str.length-1) return str;
 	return str.substr(0,index) + chr + str.substr(index+1);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
