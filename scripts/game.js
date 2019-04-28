@@ -1,4 +1,3 @@
-
 var player = {
 	speed: 256,
 	x: 0,
