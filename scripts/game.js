@@ -7,27 +7,33 @@ var player = {
     height: 50
 };
 
-var then = Date.now();
-var keysDown = {};
-var roomSize = 20;
-var floorSize = 5;
-var coord = [0, 0];
+const roomSize = 20;
+let cmd = "room";
+let currentFloor = 1;
+
+let floorSize = 3;
+let then = Date.now();
+let keysDown = {};
+let coord = [0, 0];
+let exit = [false, false];
 
 //INITIALISE CANVAS
-var canvas = document.getElementById("game");
-var ctx = canvas.getContext("2d");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
 
-var mapCanvas = document.getElementById("map");
+
+let mapCanvas = document.getElementById("map");
 mapCanvas.width = 512;
 mapCanvas.height = 480;
-var ctxMap = mapCanvas.getContext("2d");
+
+let ctxMap = mapCanvas.getContext("2d");
 
 
 //CREATES COORDINATES ARRAY FOR ROOMS
-var grid = [];
-var mapGrid = [];
+let grid = [];
+let mapGrid = [];
 for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
     for(var y = 0; y <= roomSize; y++){
@@ -45,13 +51,13 @@ for(var x = 0; x <= floorSize; x++) {
     }
 }
 
-var map =  newMaze(floorSize);
-var currentLevel = map[coord[0]][coord[1]];
+let map =  newMaze(floorSize);
+let currentLevel = map[coord[0]][coord[1]];
 
 //PLAYER IMAGE
-var playerImage = new Image();
+let playerImage = new Image();
 playerImage.src = "ressources/images/zombie.png";
-var playerReady = true;
+let playerReady = true;
 
 loadLevelData();
 
@@ -65,13 +71,13 @@ addEventListener("keyup", function (e) {
 
 
 //reset player position to middle
-var reset = function () {
+let reset = function () {
     player.x = canvas.width / 2;
 	player.y = canvas.height / 2;
 };
 
 //CONTROLS
-var update = function (modifier) {
+var update = async function (modifier) {
     
     //print coordinates for testing :
     //console.log("X = "+player.x+"    Y = "+player.y);
@@ -96,8 +102,20 @@ var update = function (modifier) {
     
     var nextSquare = getNextSquareType(player.x, player.y);
     
-    if(nextSquare == "W" || nextSquare == "A" || nextSquare == "S" || nextSquare == "D") {
-        enterRoom(getEntrancePos(nextSquare), getNextRoom(nextSquare));
+    //defines what to do if player touches a roomChange (WASD) or the exit (exit)
+    switch(nextSquare) {
+        case "W":
+        case "A":
+        case "S":
+        case "D":
+            enterRoom(getEntrancePos(nextSquare), getNextRoom(nextSquare));
+            break;
+            
+        case "exit":
+            console.log("was an exit");
+            cmd = "exit";
+            await sleep(5000);
+            break;
     }
     
     //main walls collision detection
@@ -203,6 +221,10 @@ function getNextSquareType(x, y){
     var col = Math.floor(x/(canvas.width/roomSize))+1;
     var row = Math.floor(y/(canvas.width/roomSize))+1;
     
+    //if the next tile is the exit
+    if(isThisRoomTheExit() && isThisTheMiddleOfTheRoom(row, col))
+        return "exit";
+    
     if(y >= canvas.height-(player.height)) row = roomSize-1;
     
     if(col < 0) col = 0;
@@ -275,20 +297,90 @@ function drawRoom() {
     
     for(var x = 0; x <= roomSize; x++) {
         for(var y = 0; y <= roomSize; y++){
-           ctx.drawImage(
-                getImage(grid[x][y][2]),    //image
-                grid[x][y][0],              //coord x
-                grid[x][y][1],              //coord y
-                canvas.width/roomSize,      //width 
-                canvas.height/roomSize      //height
-           );
+            
+            if(!isThisRoomTheExit()) {
+                ctx.drawImage(
+                    getImage(grid[x][y][2]),    //image
+                    grid[x][y][0],              //coord x
+                    grid[x][y][1],              //coord y
+                    canvas.width/roomSize,      //width 
+                    canvas.height/roomSize      //height
+               );
+            } else if(!isThisTheMiddleOfTheRoom(x, y) ) {
+               ctx.drawImage(
+                    getImage(grid[x][y][2]),    //image
+                    grid[x][y][0],              //coord x
+                    grid[x][y][1],              //coord y
+                    canvas.width/roomSize,      //width 
+                    canvas.height/roomSize      //height
+               );
+            }
+        }
+    }
+
+    //draws stairs in the middle of the room
+    if(isThisRoomTheExit()) {
+        let stairs = new Image();
+        stairs.src = "ressources/images/stairs.jpg";
+        stairs.onload=function() {
+            for(var x = roomSize/2-1; x < roomSize/2; x++) {
+                for(var y = roomSize/2-1; y < roomSize/2; y++) {
+                    ctx.drawImage(
+                        stairs,                         //image
+                        grid[x][y][0],                //coord x
+                        grid[x][y][1],                //coord y
+                        (canvas.width/roomSize)*2,      //width 
+                        (canvas.height/roomSize)*2      //height
+                   );
+                }
+            }
+            
         }
     }
 }
 
+function isThisRoomTheExit() {
+    if(coord[0] == exit[0] && coord[1] == exit[1])
+        return true;
+    return false;
+}
+
+function isThisTheMiddleOfTheRoom(x, y) {
+    let min = roomSize/2-1;
+    let max = roomSize/2;
+    if(x < min || x > max || y < min || y > max)
+        return false;
+    return true;
+}
+
+function nextFloor() {
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.stroke();
+    
+    var message ="You found the exit!";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "normal 36px Arial";
+    ctx.fillText(message, canvas.width/2, canvas.height/2);
+    ctx.stroke();
+}
+
 //DRAW
-function render() {
-    drawRoom();
+async function render() {
+    
+    switch(cmd) {
+        case "room":
+            drawRoom();
+            break;
+            
+        case "exit":
+            playerReady = false;
+            nextFloor();
+            break;
+    }
+    
 	if (playerReady) {
 		ctx.drawImage(
             playerImage, 
@@ -316,19 +408,20 @@ function main() {
 }
 
 reset();
-addRoomToMap();
+//addRoomToMap();   just for debugging, uncomment this and comment showAllMap for playing
+showAllMap();
 main();
 
 
 function newMaze(floorSize) {
     
     // Establish variables and starting grid
-    var x = floorSize;
-    var y = floorSize;
-    var totalCells = x*y;
-    var map = [];
-    var cells = new Array();
-    var unvis = new Array();
+    let x = floorSize;
+    let y = floorSize;
+    let totalCells = x*y;
+    let map = [];
+    let cells = new Array();
+    let unvis = new Array();
     
     for (var i = 0; i < y; i++) {
         cells[i] = new Array();
@@ -342,18 +435,22 @@ function newMaze(floorSize) {
     }
     
     // Set a random position to start from
-    var currentCell = [Math.floor(Math.random()*y), Math.floor(Math.random()*x)];
-    var path = [currentCell];
+    let currentCell = [Math.floor(Math.random()*y), Math.floor(Math.random()*x)];
+    let path = [currentCell];
     unvis[currentCell[0]][currentCell[1]] = false;
-    var visited = 1;
+    let visited = 1;
     
     // Loop through all available cell positions
     while (visited < totalCells) {
+        
         // Determine neighboring cells
-        var pot = [[currentCell[0]-1, currentCell[1], 0, 2],
-                [currentCell[0], currentCell[1]+1, 1, 3],
-                [currentCell[0]+1, currentCell[1], 2, 0],
-                [currentCell[0], currentCell[1]-1, 3, 1]];
+        var pot =   [
+                        [currentCell[0]-1, currentCell[1], 0, 2],
+                        [currentCell[0], currentCell[1]+1, 1, 3],
+                        [currentCell[0]+1, currentCell[1], 2, 0],
+                        [currentCell[0], currentCell[1]-1, 3, 1]
+                    ];
+        
         var neighbors = new Array();
         
         // Determine if each neighboring cell is in game grid, and whether it has already been checked
@@ -380,6 +477,9 @@ function newMaze(floorSize) {
         }
         // Otherwise go back up a step and keep going
         else {
+            if(exit[0] == false && exit[1] == false) {
+                exit = [currentCell[0], currentCell[1]];
+            }
             currentCell = path.pop();
         }
     }
@@ -396,19 +496,22 @@ function newMaze(floorSize) {
 //adds current room to map
 function addRoomToMap() {
     
-    var tileWidth = mapCanvas.width/floorSize;
-    var tileHeight = mapCanvas.height/floorSize;
-    var roomString = "0000";
+    console.log("exit is "+exit[0]+", "+exit[1]);
+    console.log("coords = ["+exit[0]+", "+exit[1]+"]");
     
-    var playerPos = new Image();
+    let tileWidth = mapCanvas.width/floorSize;
+    let tileHeight = mapCanvas.height/floorSize;
+    let roomString = "0000";
     
+    let playerPos = new Image();
+    let exitPos = new Image();
+    let roomImage = new Image();
     
     roomString = setCharAt(roomString, 0, map[coord[0]][coord[1]].charAt(0));
     roomString = setCharAt(roomString, 1, map[coord[0]][coord[1]].charAt(1));
     roomString = setCharAt(roomString, 2, map[coord[0]][coord[1]].charAt(2));
     roomString = setCharAt(roomString, 3, map[coord[0]][coord[1]].charAt(3));
     
-    var roomImage = new Image();
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
     roomImage.onload=function(){
@@ -420,16 +523,35 @@ function addRoomToMap() {
                             tileHeight                        //height
                         );
         
+        if(isThisRoomTheExit()) 
+        {
+            console.log("EXIT IS HERE ("+coord[0]+", "+coord[1]+")");
+            exitPos.src = "ressources/images/exit.png";
+            exitPos.onload=function()
+            {
+                ctxMap.drawImage    (
+                                        exitPos,                          //image
+                                        mapGrid[coord[1]][coord[0]][0],   //coord x
+                                        mapGrid[coord[1]][coord[0]][1],   //coord y
+                                        tileWidth,                        //width 
+                                        tileHeight                        //height
+                                    );
+            } 
+        }
+        
         playerPos.src = "ressources/images/youAreHere.png";
-        playerPos.onload=function(){
-        ctxMap.drawImage(
-                            playerPos,                          //image
-                            (tileWidth*coord[1])+tileWidth/4,   //coord x
-                            (tileHeight*coord[0])+tileHeight/4, //coord y
-                            tileWidth/2,                        //width 
-                            tileHeight/2                        //height
-                        );
+        playerPos.onload=function()
+        {
+            ctxMap.drawImage(
+                                playerPos,                          //image
+                                (tileWidth*coord[1])+tileWidth/4,   //coord x
+                                (tileHeight*coord[0])+tileHeight/4, //coord y
+                                tileWidth/2,                        //width 
+                                tileHeight/2                        //height
+                            );
+        
         } 
+       
     }
 }
 
@@ -437,16 +559,16 @@ function addRoomToMap() {
 //called in enterRoom and just before main
 function clearPlayerMarker(x, y) {
     
-    var tileWidth = mapCanvas.width/floorSize;
-    var tileHeight = mapCanvas.height/floorSize;
-    var roomString = "0000";
+    let tileWidth = mapCanvas.width/floorSize;
+    let tileHeight = mapCanvas.height/floorSize;
+    let roomString = "0000";
+    let roomImage = new Image();
     
     roomString = setCharAt(roomString, 0, map[coord[0]][coord[1]].charAt(0));
     roomString = setCharAt(roomString, 1, map[coord[0]][coord[1]].charAt(1));
     roomString = setCharAt(roomString, 2, map[coord[0]][coord[1]].charAt(2));
     roomString = setCharAt(roomString, 3, map[coord[0]][coord[1]].charAt(3));
     
-    var roomImage = new Image();
     roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
     
     roomImage.onload=function(){
@@ -459,9 +581,72 @@ function clearPlayerMarker(x, y) {
                             tileHeight                        //height
                         );
     }
+    
+    if(x == exit[0] && y == exit[1]) {
+        let exitImage = new Image();
+        exitImage.src = "ressources/images/exit.png";
+        exitImage.onload=function() {
+            ctxMap.drawImage(
+                            exitImage,                        //image
+                            mapGrid[y][x][0],               //coord x
+                            mapGrid[y][x][1],               //coord y
+                            tileWidth,                        //width 
+                            tileHeight                        //height
+                        );
+        }
+    }
+}
+
+function showAllMap() {
+    let tileWidth = mapCanvas.width/floorSize;
+    let tileHeight = mapCanvas.height/floorSize;
+    let roomString = "0000";
+    let roomImage;
+    let exitImage = new Image();
+    exitImage.src = "ressources/images/exit.png";
+    
+    for(var x = 0; x < floorSize; x++) {
+        for(var y = 0; y < floorSize; y++){
+            
+            roomString = setCharAt(roomString, 0, map[x][y].charAt(0));
+            roomString = setCharAt(roomString, 1, map[x][y].charAt(1));
+            roomString = setCharAt(roomString, 2, map[x][y].charAt(2));
+            roomString = setCharAt(roomString, 3, map[x][y].charAt(3));
+
+            roomImage = new Image();
+            roomImage.src = "ressources/images/map_tiles/" + roomString + ".jpg";
+            roomImage.coords = {x: x, y: y};
+            
+            roomImage.onload=function(){
+                ctxMap.drawImage(
+                                    this,                                       //image
+                                    mapGrid[this.coords.y][this.coords.x][0],   //coord x       why are the y and x reversed here?!!?!?
+                                    mapGrid[this.coords.y][this.coords.x][1],   //coord y
+                                    tileWidth,                                  //width 
+                                    tileHeight                                  //height
+                                );
+            }
+            
+            if(x == exit[1] && y == exit[0]){
+                exitImage.onload=function() {
+                     ctxMap.drawImage(
+                                    exitImage,                                              //image
+                                    mapGrid[roomImage.coords.y][roomImage.coords.x][0],     //coord x       why are the y and x reversed here?!!?!?
+                                    mapGrid[roomImage.coords.y][roomImage.coords.x][1],     //coord y
+                                    tileWidth,                                              //width 
+                                    tileHeight                                              //height
+                                ); 
+                }
+            }
+        }
+    }
 }
 
 function setCharAt(str,index,chr) {
 	if(index > str.length-1) return str;
 	return str.substr(0,index) + chr + str.substr(index+1);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
