@@ -4,8 +4,49 @@ var player = {
 	x: 0,
 	y: 0,
     width: 50,
-    height: 50
+    height: 50,
+    state: "idle",
+    direction: 1
 };
+
+let animations = {
+    idle : {
+        0 : {
+            x : [0],
+            y : 3
+        },
+        1 : {
+            x : [0],
+            y : 1
+        },
+        2 : {
+            x : [0],
+            y : 2
+        },
+        3 : {
+            x : [0],
+            y : 0
+        }
+    },
+    walk : {
+         0 : {
+            x : [1, 2],
+            y : 3
+        },
+        1 : {
+            x : [1, 2, 3, 2],
+            y : 1
+        },
+        2 : {
+            x : [1, 2],
+            y : 2
+        },
+        3 : {
+            x : [1, 2, 3, 2],
+            y : 0
+        }
+    }
+}
 
 const roomSize = 20;
 let cmd = "room";
@@ -16,6 +57,11 @@ let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
 let exit = [false, false];
+
+//variables for sprite stuff
+let frameCount = 0;
+const spriteSize = 144;
+let currentLoopIndex = 0;
 
 //INITIALISE CANVAS
 const canvas = document.getElementById("game");
@@ -56,7 +102,7 @@ let currentLevel = map[coord[0]][coord[1]];
 
 //PLAYER IMAGE
 let playerImage = new Image();
-playerImage.src = "ressources/images/zombie.png";
+playerImage.src = "ressources/images/player.png";
 let playerReady = true;
 
 loadLevelData();
@@ -81,21 +127,30 @@ var update = async function (modifier) {
     
     //print coordinates for testing :
     //console.log("X = "+player.x+"    Y = "+player.y);
+    player.state = "idle";
     
     //LOOK AT LEFT RIGHT POINT POSITIONING
 	if (38 in keysDown || 87 in keysDown) { // Player holding up
+        player.direction = 0;
+        player.state = "walk";
         if (canPassSquare(getNextSquareType(player.x, player.y - (player.speed * modifier))))
-             player.y -= player.speed * modifier;
+            player.y -= player.speed * modifier;
 	}
 	if (40 in keysDown || 83 in keysDown) { // Player holding down
+        player.direction = 2;
+        player.state = "walk";
         if (canPassSquare(getNextSquareType(player.x, player.y + (player.speed * modifier)+(canvas.width/roomSize))))
-		      player.y += player.speed * modifier;
+            player.y += player.speed * modifier;
 	}
 	if (37 in keysDown || 65 in keysDown) { // Player holding left
+        player.direction = 3;
+        player.state = "walk";
         if (canPassSquare(getNextSquareType(player.x - (player.speed * modifier)-(player.width/2), player.y)))
-		    player.x -= player.speed * modifier;
+            player.x -= player.speed * modifier;
 	}
 	if (39 in keysDown || 68 in keysDown) { // Player holding right
+        player.direction = 1;
+        player.state = "walk";
         if (canPassSquare(getNextSquareType(player.x + (player.speed * modifier)+(player.width/2), player.y)))
             player.x += player.speed * modifier;
 	}
@@ -112,7 +167,6 @@ var update = async function (modifier) {
             break;
             
         case "exit":
-            console.log("was an exit");
             cmd = "exit";
             await sleep(5000);
             break;
@@ -380,15 +434,15 @@ async function render() {
             nextFloor();
             break;
     }
-    
 	if (playerReady) {
-		ctx.drawImage(
+        Animate();
+		/*ctx.drawImage(
             playerImage, 
             player.x, 
             player.y, 
             player.width, 
             player.height
-        );
+        );*/
 	}
 }
 
@@ -408,10 +462,10 @@ function main() {
 }
 
 reset();
-//addRoomToMap();   just for debugging, uncomment this and comment showAllMap for playing
-showAllMap();
+addRoomToMap();   //just for debugging, uncomment this and comment showAllMap for playing
+//showAllMap();
+Animate();
 main();
-
 
 function newMaze(floorSize) {
     
@@ -496,9 +550,6 @@ function newMaze(floorSize) {
 //adds current room to map
 function addRoomToMap() {
     
-    console.log("exit is "+exit[0]+", "+exit[1]);
-    console.log("coords = ["+exit[0]+", "+exit[1]+"]");
-    
     let tileWidth = mapCanvas.width/floorSize;
     let tileHeight = mapCanvas.height/floorSize;
     let roomString = "0000";
@@ -525,7 +576,6 @@ function addRoomToMap() {
         
         if(isThisRoomTheExit()) 
         {
-            console.log("EXIT IS HERE ("+coord[0]+", "+coord[1]+")");
             exitPos.src = "ressources/images/exit.png";
             exitPos.onload=function()
             {
@@ -647,6 +697,35 @@ function setCharAt(str,index,chr) {
 	return str.substr(0,index) + chr + str.substr(index+1);
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+function Animate() {
+    //if(playerReady) playerReady = false;
+    
+    cycleLoop =  animations[player.state][player.direction].x;
+    sheetY = animations[player.state][player.direction].y;
+    
+    frameCount++;
+    
+    if (frameCount < 10) {
+        Animate();
+
+        return;
+    }
+    
+    frameCount = 0;
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawFrame(cycleLoop[currentLoopIndex], sheetY);
+    currentLoopIndex++;
+    
+    if (currentLoopIndex >= cycleLoop.length) {
+        currentLoopIndex = 0;
+    }
+
+   requestAnimationFrame(Animate);
+
+}
+
+function drawFrame(frameX, frameY) {
+    ctx.drawImage(playerImage,
+        frameX * spriteSize, frameY * spriteSize, spriteSize, spriteSize,
+        player.x, player.y, player.width, player.height);
 }
