@@ -725,3 +725,9 @@ function drawFrame(frameX, frameY) {
         frameX * spriteSize, frameY * spriteSize, spriteSize, spriteSize,
         player.x, player.y, player.width, player.height);
 }
+
+function clearMap() {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.stroke();
+}
