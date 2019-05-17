@@ -727,7 +727,7 @@ function drawFrame(frameX, frameY) {
 }
 
 function clearMap() {
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.stroke();
+    ctxMap.fillStyle = "#ffffff";
+    ctxMap.fillRect(0, 0, canvas.width, canvas.height);
+    ctxMap.stroke();
 }
