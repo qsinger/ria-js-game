@@ -56,7 +56,7 @@ let floorSize = 3;
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
-let exit = [false, false];
+let exit = [-1, -1];
 
 //variables for sprite stuff
 let frameCount = 0;
@@ -127,6 +127,7 @@ var update = async function (modifier) {
     
     //print coordinates for testing :
     //console.log("X = "+player.x+"    Y = "+player.y);
+    
     player.state = "idle";
     
     //LOOK AT LEFT RIGHT POINT POSITIONING
@@ -531,8 +532,11 @@ function newMaze(floorSize) {
         }
         // Otherwise go back up a step and keep going
         else {
-            if(exit[0] == false && exit[1] == false) {
-                exit = [currentCell[0], currentCell[1]];
+            if(exit[0] == -1 && exit[1] == -1) {
+                console.log(currentCell[0]+" > "+Math.floor(floorSize/2)+"  "+currentCell[1]+" > "+Math.floor(floorSize/2))
+                if(currentCell[0] != 0 || currentCell[1] != 0) {
+                    exit = [currentCell[0], currentCell[1]];
+                }
             }
             currentCell = path.pop();
         }
@@ -698,18 +702,11 @@ function setCharAt(str,index,chr) {
 }
 
 function Animate() {
-    //if(playerReady) playerReady = false;
     
     cycleLoop =  animations[player.state][player.direction].x;
     sheetY = animations[player.state][player.direction].y;
     
     frameCount++;
-    
-    if (frameCount < 10) {
-        Animate();
-
-        return;
-    }
     
     frameCount = 0;
     //ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -719,9 +716,6 @@ function Animate() {
     if (currentLoopIndex >= cycleLoop.length) {
         currentLoopIndex = 0;
     }
-
-   requestAnimationFrame(Animate);
-
 }
 
 function drawFrame(frameX, frameY) {
