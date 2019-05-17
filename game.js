@@ -56,7 +56,7 @@ let floorSize = 5;
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
-let exit = [-1, -1];
+let exit = [0, 1];
 
 //variables for sprite stuff
 let frameCount = 0;
@@ -169,7 +169,6 @@ var update = async function (modifier) {
             
         case "exit":
             cmd = "exit";
-            setTimeout(function(){ }, 5000);
             break;
     }
     
@@ -409,8 +408,6 @@ function isThisTheMiddleOfTheRoom(x, y) {
 }
 
 function nextFloor() {
-    console.log("NEXTFLOOR");
-
     cmd = "room";
     currentFloor++;
 
@@ -461,6 +458,7 @@ function nextFloor() {
 
 }
 
+
 //DRAW
 async function render() {
     
@@ -470,8 +468,31 @@ async function render() {
             break;
             
         case "exit":
-            playerReady = false;
-            nextFloor();
+
+            if(currentFloor === 1){
+
+                cmd = "rien";
+
+                clearMap();
+
+                const {value: name} = await Swal.fire({
+                    title: 'Great job',
+                    input: 'text',
+                    inputPlaceholder: 'Enter your name'
+                });
+
+                console.log(name);
+
+            }else{
+                Swal.fire(
+                    'Good job!',
+                    'You finished the level!',
+                    'success'
+                );
+
+                nextFloor();
+            }
+
             break;
     }
 	if (playerReady) {
@@ -486,9 +507,18 @@ async function render() {
 	}
 }
 
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
+}
+
 // The main game loop
 function main() {
-    
+
 	var now = Date.now();
 	var delta = now - then;
 
@@ -496,7 +526,7 @@ function main() {
 	render();
 
 	then = now;
-    
+
     //recursive
 	requestAnimationFrame(main);
 }
@@ -571,13 +601,7 @@ function newMaze(floorSize) {
         }
         // Otherwise go back up a step and keep going
         else {
-            if(exit[0] == -1 && exit[1] == -1) {
-                //console.log("There is no current exit...");
-                if(currentCell[0] >= Math.ceil(floorSize/2) || currentCell[1] >= Math.ceil(floorSize/2)) {
-                    //console.log("ADDING EXIT");
-                    exit = [currentCell[0], currentCell[1]];
-                }
-            }
+
             currentCell = path.pop();
         }
     }

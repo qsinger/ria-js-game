@@ -6,6 +6,7 @@
 
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
         <style>
             ul {
@@ -70,24 +71,24 @@
                 <h2>Quelle note donnez-vous à ce jeu ?</h2>
 
                 <div id="notes">
-                    <div draggable="true" ondragend="dragEnd()" ondragstart="drag(event, function(){
-                        document.getElementById('vote-result').style.backgroundColor = 'lightgray';
+                    <div draggable="true" ondragend="dragAndDropManager.dragEnd()" ondragstart="dragAndDropManager.drag(event, function(){
+                        dragAndDropManager.targetDrop.style.backgroundColor = 'lightgray';
                     })">
                         Incroyable !
                     </div>
-                    <div draggable="true" ondragend="dragEnd()" ondragstart="drag(event, function(){
-                        document.getElementById('vote-result').style.backgroundColor = 'lightgray';
+                    <div draggable="true" ondragend="dragAndDropManager.dragEnd()" ondragstart="dragAndDropManager.drag(event, function(){
+                        dragAndDropManager.targetDrop.style.backgroundColor = 'lightgray';
                     })">
                         Super !
                     </div>
-                    <div draggable="true" ondragend="dragEnd()" ondragstart="drag(event, function(){
-                        document.getElementById('vote-result').style.backgroundColor = 'lightgray';
+                    <div draggable="true" ondragend="dragAndDropManager.dragEnd()" ondragstart="dragAndDropManager.drag(event, function(){
+                        dragAndDropManager.targetDrop.style.backgroundColor = 'lightgray';
                     })">
                         Excellent !
                     </div>
                 </div>
 
-                <div id="vote-result" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div id="vote-result" ondrop="dragAndDropManager.drop(event)" ondragover="dragAndDropManager.allowDrop(event)">
 
                 </div>
 
@@ -154,24 +155,24 @@
                     xhttp.send();
                 }
 
-                function dragEnd(){
-                    document.body.style.backgroundColor = 'white';
-                    document.getElementById('vote-result').style.backgroundColor = 'white';
-                }
-
-                function allowDrop(ev) {
-                    ev.preventDefault();
-                }
-
-                function drag(ev, callback) {
-                    ev.dataTransfer.setData("text/html", ev.target.innerText);
-                    callback();
-                }
-
-                function drop(ev) {
-                    ev.preventDefault();
-                    alert("Merci pour ton vote !!\n" + ev.dataTransfer.getData("text/html"));
-                }
+                let dragAndDropManager = {
+                    targetDrop : document.getElementById('vote-result'),
+                    dragEnd : function(){
+                        document.body.style.backgroundColor = 'white';
+                        document.getElementById('vote-result').style.backgroundColor = 'white';
+                    },
+                    allowDrop : function(ev) {
+                        ev.preventDefault();
+                    },
+                    drag : function(ev, callback) {
+                        ev.dataTransfer.setData("text/html", ev.target.innerText);
+                        callback();
+                    },
+                    drop : function(ev) {
+                        ev.preventDefault();
+                        alert("Merci pour ton vote !!\n" + ev.dataTransfer.getData("text/html"));
+                    }
+                };
 
                 let funcDisplayContent = function(elementToDisplay){
                     var sections = document.querySelectorAll("section");
