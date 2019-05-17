@@ -169,7 +169,7 @@ var update = async function (modifier) {
             
         case "exit":
             cmd = "exit";
-            await sleep(5000);
+            setTimeout(function(){ }, 5000);
             break;
     }
     
@@ -409,17 +409,62 @@ function isThisTheMiddleOfTheRoom(x, y) {
 }
 
 function nextFloor() {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.stroke();
-    
-    var message ="You found the exit!";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "bottom";
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "normal 36px Arial";
-    ctx.fillText(message, canvas.width/2, canvas.height/2);
-    ctx.stroke();
+    console.log("NEXTFLOOR");
+
+    cmd = "room";
+    currentFloor++;
+
+    floorSize++;
+    then = Date.now();
+    keysDown = {};
+    coord = [0, 0];
+    exit = [-1, -1];
+
+    //variables for sprite stuff
+    frameCount = 0;
+    currentLoopIndex = 0;
+
+    clearMap();
+
+    //CREATES COORDINATES ARRAY FOR ROOMS
+    grid = [];
+    mapGrid = [];
+    for(var x = 0; x <= roomSize; x++) {
+        grid[x] = [];
+        for(var y = 0; y <= roomSize; y++){
+            grid[x][y] = [];
+            grid[x][y] = [(canvas.width/roomSize)*x, (canvas.height/roomSize)*y, "@"];
+        }
+    }
+
+    //CREATES COORDINATES ARRAY FOR MAP
+    for(var x = 0; x <= floorSize; x++) {
+        mapGrid[x] = [];
+        for(var y = 0; y <= floorSize; y++){
+            mapGrid[x][y] = [];
+            mapGrid[x][y] = [(mapCanvas.width/floorSize)*x, (mapCanvas.height/floorSize)*y];
+        }
+    }
+
+    map =  newMaze(floorSize);
+    currentLevel = map[coord[0]][coord[1]];
+
+    playerReady = true;
+
+    loadLevelData();
+
+    reset();
+    addRoomToMap();   //just for debugging, uncomment this and comment showAllMap for playing
+    //showAllMap();
+    Animate();
+    main();
+
+}
+
+function clearMap() {
+    ctxMap.fillStyle = "#ffffff";
+    ctxMap.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
+    ctxMap.stroke();
 }
 
 //DRAW
@@ -532,7 +577,6 @@ function newMaze(floorSize) {
         }
         // Otherwise go back up a step and keep going
         else {
-            //console.log("DEADEND FOUND AT ["+currentCell[0]+", "+currentCell[1]+"]");
             if(exit[0] == -1 && exit[1] == -1) {
                 //console.log("There is no current exit...");
                 if(currentCell[0] >= Math.ceil(floorSize/2) || currentCell[1] >= Math.ceil(floorSize/2)) {
