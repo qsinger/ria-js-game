@@ -1,0 +1,31 @@
+html, body{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#content{
+    padding : 24px;
+}
+
+#vote-result{
+    width:150px;
+    height:150px;
+    border: 1px solid grey;
+}
+
+#notes > div{
+    display: inline-block;
+    width : 150px;
+    height: 30px;
+    border: 1px lightgray dashed;
+    text-align: center;
+    vertical-align: middle;
+    margin:10px;
+    cursor:pointer;
+}
+
+#map{
+    height: 400px;  /* The height is 400 pixels */
+    width: 100%;  /* The width is the width of the web page */
+}
