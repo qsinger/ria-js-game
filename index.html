@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>Jeux RIA</title>
 
+        <link rel="stylesheet" type="text/css" href="site/ressources/css/style.css">
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -40,10 +41,10 @@
 
         <div id="content">
 
-            <section style="display: none;" id="game">
+            <section style="display: none;" id="div-game">
                 <h1>GAME</h1>
                 <div id="gameWrapper">
-                    <canvas id="canvas-game">
+                    <canvas id="game">
 
                     </canvas>
                     <canvas id="map">
@@ -106,7 +107,7 @@
             <script>
 
                 var menu = '{ "elements" : [' +
-                    '{ "id":"game" , "text":"Jouer" },' +
+                    '{ "id":"div-game" , "text":"Jouer" },' +
                     '{ "id":"div-map" , "text":"T\'as ou les vaches ?" },' +
                     '{ "id":"presentation" , "text":"Présentation" },' +
                     '{ "id":"ajax" , "text":"Ajax Amsterdam" } ]}';
