@@ -461,12 +461,6 @@ function nextFloor() {
 
 }
 
-function clearMap() {
-    ctxMap.fillStyle = "#ffffff";
-    ctxMap.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
-    ctxMap.stroke();
-}
-
 //DRAW
 async function render() {
     
