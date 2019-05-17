@@ -728,6 +728,6 @@ function drawFrame(frameX, frameY) {
 
 function clearMap() {
     ctxMap.fillStyle = "#ffffff";
-    ctxMap.fillRect(0, 0, canvas.width, canvas.height);
+    ctxMap.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
     ctxMap.stroke();
 }
