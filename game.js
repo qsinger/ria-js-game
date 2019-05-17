@@ -52,7 +52,7 @@ const roomSize = 20;
 let cmd = "room";
 let currentFloor = 1;
 
-let floorSize = 3;
+let floorSize = 5;
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
@@ -532,9 +532,11 @@ function newMaze(floorSize) {
         }
         // Otherwise go back up a step and keep going
         else {
+            console.log("DEADEND FOUND AT ["+currentCell[0]+", "+currentCell[1]+"]");
             if(exit[0] == -1 && exit[1] == -1) {
-                console.log(currentCell[0]+" > "+Math.floor(floorSize/2)+"  "+currentCell[1]+" > "+Math.floor(floorSize/2))
-                if(currentCell[0] != 0 || currentCell[1] != 0) {
+                console.log("There is no current exit...");
+                if(currentCell[0] >= Math.ceil(floorSize/2) || currentCell[1] >= Math.ceil(floorSize/2)) {
+                    console.log("ADDING EXIT");
                     exit = [currentCell[0], currentCell[1]];
                 }
             }
