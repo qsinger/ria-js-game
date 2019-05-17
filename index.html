@@ -5,6 +5,7 @@
         <title>Jeux RIA</title>
 
         <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         <style>
             ul {
@@ -42,7 +43,7 @@
             <section style="display: none;" id="game">
                 <h1>GAME</h1>
                 <div id="gameWrapper">
-                    <canvas id="game">
+                    <canvas id="canvas-game">
 
                     </canvas>
                     <canvas id="map">
@@ -232,7 +233,7 @@
                 }
 
             </script>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
             <script src="game.js"></script>
             <script async defer
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfPVqw8SZzF5cWLAYbXsLpuhtN-0GuNtA&callback=initMap">

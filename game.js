@@ -64,7 +64,7 @@ const spriteSize = 144;
 let currentLoopIndex = 0;
 
 //INITIALISE CANVAS
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("canvas-game");
 const ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
