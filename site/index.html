@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+    <title>HEVS 2019</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="ressources/css/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+</head>
+<body>
+
+<header>
+    <div id="mainTitle">
+        <h1>HES-SO Vs - 603-4 - HTML/CSS/JavaScript</h1>
+    </div>
+    <nav>
+        <menu id="mainMenu">
+            <menuitem class="selected">
+                <a href="index.html">Description</a>
+            </menuitem>
+            <menuItem>
+                <a href="maquettes.html">Maquettes</a>
+            </menuitem>
+            <menuitem>
+                <a href="mockup.html">Mockup</a>
+            </menuitem>
+            <menuitem>
+                <a href="flux.html">Flux</a>
+            </menuitem>
+            <menuitem>
+                <a href="journal.html">Journal de bord</a>
+            </menuitem>
+        </menu>
+
+        <div class="topnav" id="mainMenuResp">
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <i class="fas fa-bars"></i>
+            </a>
+            <a href="index.html" class="selected">Description</a>
+            <a href="maquettes.html">Maquettes</a>
+            <a href="mockup.html">Mockup</a>
+            <a href="flux.html">Flux</a>
+            <a href="journal.html">Journal de bord</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <!-- Début zone pour votre contenu -->
+    <section id="articles">
+        <article>
+            <header>
+                <h2>Description de votre projet</h2>
+                <p>Par Jean Dupont le 5/02/2019 à 09:00</p>
+            </header>
+            <p>L'idée de base est de construire chaque pièce du jeu avec un fichier txt, chaque personnage représentant un élément de la pièce. Par exemple, nous avons le modèle de pièce de base qui contient tous les @s (espaces vides) et #s pour les murs extérieurs.</p>
+            <img src="ressources/dev/room.png">
+            <p>Nous pouvons alors créer assez rapidement de nombreuses salles différentes et les organiser en une carte pour l'étage actuel des jeux. Si nous randomisons cela à chaque fois, et avec suffisamment de pièces, nous devrions être en mesure de créer une nouvelle expérience pour le joueur à chaque nouveau jeu. L'objectif du jeu sera de naviguer dans ces salles et de trouver la sortie qui permettra au joueur de passer au niveau suivant. Ceci sera répété jusqu'à ce que tous les niveaux soient terminés et que le joueur batte le jeu.</p>
+            <p>Il pourrait également être possible d'organiser les salles selon des modèles plus intéressants pour créer une disposition unique à chaque nouveau jeu. La logique pour cela serait un peu plus compliquée mais rendrait le jeu beaucoup plus intéressant. </p>
+
+        </article>
+    </section>
+    <aside>
+        <div>
+            <h3>Fiche signalétique</h3>
+            <ul>
+                <li>
+                    <p><strong>Pocklignton Benjamin: </strong><br/>Game Developer</p>
+                </li>
+                <li>
+                    <p><strong>Singer Quentin: </strong><br/>Responsive man</p>
+                </li>
+                <li>
+                    <p><strong>Thompson Dylan: </strong><br/>Webmaster</p>
+                </li>
+            </ul>
+        </div>
+    </aside>
+    <!-- >Fin zone pour votre contenu -->
+</main>
+    
+    <footer>
+        <img id="logo" src="ressources/images/logo_full.png">
+    </footer>
+    <script src="site/scripts/mapGen.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function myFunction() {
+            var x = document.getElementById("mainMenuResp");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+    </script>
+
+</body>
+</html>

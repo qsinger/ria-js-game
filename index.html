@@ -1,99 +1,245 @@
-<!doctype html>
-<html>
-<head>
-    <title>HEVS 2019</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="ressources/css/style.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-</head>
-<body>
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Jeux RIA</title>
 
-<header>
-    <div id="mainTitle">
-        <h1>HES-SO Vs - 603-4 - HTML/CSS/JavaScript</h1>
-    </div>
-    <nav>
-        <menu id="mainMenu">
-            <menuitem class="selected">
-                <a href="index.html">Description</a>
-            </menuitem>
-            <menuItem>
-                <a href="maquettes.html">Maquettes</a>
-            </menuitem>
-            <menuitem>
-                <a href="mockup.html">Mockup</a>
-            </menuitem>
-            <menuitem>
-                <a href="flux.html">Flux</a>
-            </menuitem>
-            <menuitem>
-                <a href="journal.html">Journal de bord</a>
-            </menuitem>
-        </menu>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-        <div class="topnav" id="mainMenuResp">
-            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-                <i class="fas fa-bars"></i>
-            </a>
-            <a href="index.html" class="selected">Description</a>
-            <a href="maquettes.html">Maquettes</a>
-            <a href="mockup.html">Mockup</a>
-            <a href="flux.html">Flux</a>
-            <a href="journal.html">Journal de bord</a>
-        </div>
-    </nav>
-</header>
-
-<main>
-    <!-- Début zone pour votre contenu -->
-    <section id="articles">
-        <article>
-            <header>
-                <h2>Description de votre projet</h2>
-                <p>Par Jean Dupont le 5/02/2019 à 09:00</p>
-            </header>
-            <p>L'idée de base est de construire chaque pièce du jeu avec un fichier txt, chaque personnage représentant un élément de la pièce. Par exemple, nous avons le modèle de pièce de base qui contient tous les @s (espaces vides) et #s pour les murs extérieurs.</p>
-            <img src="ressources/dev/room.png">
-            <p>Nous pouvons alors créer assez rapidement de nombreuses salles différentes et les organiser en une carte pour l'étage actuel des jeux. Si nous randomisons cela à chaque fois, et avec suffisamment de pièces, nous devrions être en mesure de créer une nouvelle expérience pour le joueur à chaque nouveau jeu. L'objectif du jeu sera de naviguer dans ces salles et de trouver la sortie qui permettra au joueur de passer au niveau suivant. Ceci sera répété jusqu'à ce que tous les niveaux soient terminés et que le joueur batte le jeu.</p>
-            <p>Il pourrait également être possible d'organiser les salles selon des modèles plus intéressants pour créer une disposition unique à chaque nouveau jeu. La logique pour cela serait un peu plus compliquée mais rendrait le jeu beaucoup plus intéressant. </p>
-
-        </article>
-    </section>
-    <aside>
-        <div>
-            <h3>Fiche signalétique</h3>
-            <ul>
-                <li>
-                    <p><strong>Pocklignton Benjamin: </strong><br/>Game Developer</p>
-                </li>
-                <li>
-                    <p><strong>Singer Quentin: </strong><br/>Responsive man</p>
-                </li>
-                <li>
-                    <p><strong>Thompson Dylan: </strong><br/>Webmaster</p>
-                </li>
-            </ul>
-        </div>
-    </aside>
-    <!-- >Fin zone pour votre contenu -->
-</main>
-    
-    <footer>
-        <img id="logo" src="ressources/images/logo_full.png">
-    </footer>
-    <script src="scripts/mapGen.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-        function myFunction() {
-            var x = document.getElementById("mainMenuResp");
-            if (x.className === "topnav") {
-                x.className += " responsive";
-            } else {
-                x.className = "topnav";
+        <style>
+            ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #333;
             }
-        }
-    </script>
 
-</body>
+            li {
+                float: left;
+            }
+
+            li a {
+                display: block;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+
+            li a:hover {
+                background-color: #111;
+            }
+        </style>
+    </head>
+    <body>
+
+        <ul id="menu">
+        </ul>
+
+        <div id="content">
+
+            <section style="display: none;" id="div-game">
+                <h1>GAME</h1>
+                <div id="gameWrapper">
+                    <canvas id="game">
+
+                    </canvas>
+                    <canvas id="map">
+
+                    </canvas>
+                </div>
+            </section>
+
+            <section style="display: none;" id="div-map">
+                <h1>T'as ou les vaches ?</h1>
+
+                <div id="geo-map"></div>
+            </section>
+
+            <section style="display: none;" id="presentation">
+                <h1>Présentation</h1>
+
+                <video width="320" height="240" controls>
+                    <source src="presentation.mp4" type="video/mp4">
+                    <source src="presentation.ogg" type="video/ogg">
+                    Ton navigateur est nul.
+                </video>
+
+                <h2>Quelle note donnez-vous à ce jeu ?</h2>
+
+                <div id="notes">
+                    <div draggable="true" ondragend="dragEnd()" ondragstart="drag(event, function(){
+                        document.getElementById('vote-result').style.backgroundColor = 'lightgray';
+                    })">
+                        Incroyable !
+                    </div>
+                    <div draggable="true" ondragend="dragEnd()" ondragstart="drag(event, function(){
+                        document.getElementById('vote-result').style.backgroundColor = 'lightgray';
+                    })">
+                        Super !
+                    </div>
+                    <div draggable="true" ondragend="dragEnd()" ondragstart="drag(event, function(){
+                        document.getElementById('vote-result').style.backgroundColor = 'lightgray';
+                    })">
+                        Excellent !
+                    </div>
+                </div>
+
+                <div id="vote-result" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+                </div>
+
+            </section>
+
+            <section style="display: none;" id="ajax">
+                <h1>Ici tu retrouveras les scores des joueurs</h1>
+                <button type="button" onclick="loadDoc()">Je veux voir les scores</button>
+                <div style="margin-top:50px;" id="demo-ajax"></div>
+            </section>
+
+        </div>
+
+        <footer>
+
+            <script>
+
+                var menu = '{ "elements" : [' +
+                    '{ "id":"div-game" , "text":"Jouer" },' +
+                    '{ "id":"div-map" , "text":"T\'as ou les vaches ?" },' +
+                    '{ "id":"presentation" , "text":"Présentation" },' +
+                    '{ "id":"ajax" , "text":"Ajax Amsterdam" } ]}';
+
+                (function() {
+
+                    var currentPage = localStorage.getItem('currentPage');
+
+                    if(currentPage !== null){
+                        var element = document.getElementById(currentPage);
+                        if(element !== null){
+                            element.style.display = "block";
+                        }else{
+                            document.getElementById('game').style.display = "block";
+                        }
+                    }else{
+                        document.getElementById('game').style.display = "block";
+                    }
+
+                    let menuObject = JSON.parse(menu);
+                    let menuHtml = document.getElementById("menu");
+
+                    menuObject.elements.forEach(function(element){
+                        var li = document.createElement("li");
+                        var a =  document.createElement("a");
+                        a.innerText = element.text;
+                        a.style.cursor = "pointer";
+                        a.addEventListener('click', function(){
+                            funcDisplayContent(element.id);
+                        });
+                        li.appendChild(a);
+                        menuHtml.appendChild(li);
+                    });
+
+                })();
+
+                function loadDoc() {
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            document.getElementById("demo-ajax").innerHTML = this.responseText;
+                        }
+                    };
+                    xhttp.open("GET", "scores.txt", true);
+                    xhttp.send();
+                }
+
+                function dragEnd(){
+                    document.body.style.backgroundColor = 'white';
+                    document.getElementById('vote-result').style.backgroundColor = 'white';
+                }
+
+                function allowDrop(ev) {
+                    ev.preventDefault();
+                }
+
+                function drag(ev, callback) {
+                    ev.dataTransfer.setData("text/html", ev.target.innerText);
+                    callback();
+                }
+
+                function drop(ev) {
+                    ev.preventDefault();
+                    alert("Merci pour ton vote !!\n" + ev.dataTransfer.getData("text/html"));
+                }
+
+                let funcDisplayContent = function(elementToDisplay){
+                    var sections = document.querySelectorAll("section");
+
+                    sections.forEach(function(section){
+                        section.style.display = "none";
+                    })
+
+                    localStorage.setItem('currentPage', elementToDisplay);
+
+                    var sectionElement =  document.getElementById(elementToDisplay);
+
+                    if(sectionElement !== null){
+                        sectionElement.style.display = "block";
+                    }else{
+                        document.getElementById('game').style.display = "block";
+                    }
+                }
+
+                // Note: This example requires that you consent to location sharing when
+                // prompted by your browser. If you see the error "The Geolocation service
+                // failed.", it means you probably did not give permission for the browser to
+                // locate you.
+                var gMap, infoWindow;
+                function initMap() {
+                    gMap = new google.maps.Map(document.getElementById('geo-map'), {
+                        center: {lat: -34.397, lng: 150.644},
+                        zoom: 9
+                    });
+                    infoWindow = new google.maps.InfoWindow;
+
+                    // Try HTML5 geolocation.
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+
+                            infoWindow.setPosition(pos);
+                            infoWindow.setContent('Elles sont la !');
+                            infoWindow.open(gMap);
+                            gMap.setCenter(pos);
+                        }, function() {
+                            handleLocationError(true, infoWindow, gMap.getCenter());
+                        });
+                    } else {
+                        // Browser doesn't support Geolocation
+                        handleLocationError(false, infoWindow, gMap.getCenter());
+                    }
+                }
+
+                function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+                    infoWindow.setPosition(pos);
+                    infoWindow.setContent(browserHasGeolocation ?
+                        'Error: Y\'a eu un problème !' :
+                        'Error: Votre navigateur craind.');
+                    infoWindow.open(gMap);
+                }
+
+            </script>
+
+            <script src="game.js"></script>
+            <script async defer
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfPVqw8SZzF5cWLAYbXsLpuhtN-0GuNtA&callback=initMap">
+            </script>
+
+        </footer>
+
+    </body>
 </html>
