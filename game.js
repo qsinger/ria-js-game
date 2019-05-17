@@ -532,11 +532,11 @@ function newMaze(floorSize) {
         }
         // Otherwise go back up a step and keep going
         else {
-            console.log("DEADEND FOUND AT ["+currentCell[0]+", "+currentCell[1]+"]");
+            //console.log("DEADEND FOUND AT ["+currentCell[0]+", "+currentCell[1]+"]");
             if(exit[0] == -1 && exit[1] == -1) {
-                console.log("There is no current exit...");
+                //console.log("There is no current exit...");
                 if(currentCell[0] >= Math.ceil(floorSize/2) || currentCell[1] >= Math.ceil(floorSize/2)) {
-                    console.log("ADDING EXIT");
+                    //console.log("ADDING EXIT");
                     exit = [currentCell[0], currentCell[1]];
                 }
             }
