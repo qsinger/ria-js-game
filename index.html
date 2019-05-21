@@ -51,6 +51,31 @@
 
                     </canvas>
                 </div>
+                <div style="margin: 20px 0;">
+                    Ton temps : <span id="time"></span>
+                </div>
+                <div>
+                    <button class="button" onclick="location.reload()">Recommencer la partie !</button>
+                </div>
+            </section>
+
+            <section style="display: none;" id="score-saving">
+                <h1>Enregistre ton score !</h1>
+                <form id="save-score">
+                    <div class="form-group">
+                        <label for="pseudo">
+                            Pseudo
+                        </label>
+                        <input required type="text" name="pseudo" id="pseudo" placeholder="Pseudo">
+                    </div><!--
+                    --><div class="form-group">
+                        <label>
+                            Temps (secondes)
+                        </label>
+                        <input type="text" disabled id="player-time">
+                    </div>
+                    <input type="submit" value="Enregistrer">
+                </form>
             </section>
 
             <section style="display: none;" id="div-map">
@@ -95,22 +120,60 @@
             </section>
 
             <section style="display: none;" id="ajax">
-                <h1>Ici tu retrouveras les scores des joueurs</h1>
-                <button type="button" onclick="loadDoc()">Je veux voir les scores</button>
+                <h1>Ici tu peux afficher le contenu d'un fichier text !</h1>
+                <button type="button" onclick="loadDoc()">Je veux voir le contenu secret du fichier text !</button>
                 <div style="margin-top:50px;" id="demo-ajax"></div>
+            </section>
+
+            <section style="display: none;" id="scores">
+                <h1>Ici tu retrouveras les scores des joueurs</h1>
+                <div style="margin-top:50px;">
+                    <table style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Rang</th>
+                                <th>Pseudo</th>
+                                <th>Temps</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-scores">
+                        </tbody>
+
+                    </table>
+                </div>
             </section>
 
         </div>
 
         <footer>
 
-            <script>
+            <script language="JavaScript">
 
                 var menu = '{ "elements" : [' +
                     '{ "id":"div-game" , "text":"Jouer" },' +
                     '{ "id":"div-map" , "text":"T\'as ou les vaches ?" },' +
                     '{ "id":"presentation" , "text":"Présentation" },' +
-                    '{ "id":"ajax" , "text":"Ajax Amsterdam" } ]}';
+                    '{ "id":"ajax" , "text":"Ajax Amsterdam" },' +
+                    '{ "id":"scores" , "text":"Scores" } ]}';
+
+                var DrawerManager = {
+                    create: function( elementTag, parentElement, innerText ){
+                        if(elementTag == undefined){
+                            throw new Error("le tag est obligatoire");
+                        }
+
+                        const newElement = document.createElement(elementTag);
+
+                        if(innerText != undefined){
+                            newElement.innerText = innerText;
+                        }
+                        if(parentElement != undefined){
+                            parentElement.append(newElement);
+                        }
+
+                        return newElement;
+                    },
+                };
 
                 (function() {
 
@@ -120,11 +183,43 @@
                         var element = document.getElementById(currentPage);
                         if(element !== null){
                             element.style.display = "block";
+
+                            if(currentPage === 'score-saving'){
+                                var playerTime = localStorage.getItem('endTime');
+
+                                if(playerTime !== null){
+                                    document.getElementById("player-time").value = playerTime;
+
+                                    Swal.fire(
+                                        'Good job!',
+                                        'You finished the level in ' + playerTime + ' seconds, are you the god ? Save your score now !',
+                                        'success'
+                                    );
+
+                                }
+                            }
+
                         }else{
-                            document.getElementById('game').style.display = "block";
+                            document.getElementById('div-game').style.display = "block";
                         }
                     }else{
-                        document.getElementById('game').style.display = "block";
+                        document.getElementById('div-game').style.display = "block";
+                    }
+
+                    let scores = JSON.parse(localStorage.getItem('scores'));
+                    var tBodyScores = document.getElementById('tbody-scores');
+
+                    if(scores === null || scores === undefined || scores.length === 0){
+                        tBodyScores.innerHTML = "Y'a pas encore de joueurs ! Va jouer au lieu de regarder les scores !";
+                    }else{
+                        let rank = 1;
+                        scores.forEach(function(score){
+                            var tr = DrawerManager.create('tr', tBodyScores);
+                            DrawerManager.create('td', tr, rank);
+                            DrawerManager.create('td', tr, score.pseudo);
+                            DrawerManager.create('td', tr, score.time);
+                            rank++;
+                        });
                     }
 
                     let menuObject = JSON.parse(menu);
@@ -151,9 +246,57 @@
                             document.getElementById("demo-ajax").innerHTML = this.responseText;
                         }
                     };
-                    xhttp.open("GET", "scores.txt", true);
+                    xhttp.open("GET", "file.txt", true);
                     xhttp.send();
                 }
+
+                function orderByTime( a, b ) {
+                    if ( a.time < b.time ){
+                        return -1;
+                    }
+                    if ( a.time > b.time ){
+                        return 1;
+                    }
+                    return 0;
+                }
+
+                $("#save-score").submit(function (event) {
+                    event.preventDefault();
+                    let pseudo = document.getElementById('pseudo').value.trim();
+                    var playerTime = localStorage.getItem('endTime');
+
+                    if(pseudo === null || pseudo === undefined || pseudo === ""){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Oops...',
+                            text: 'You have to fill in the pseudo input!'
+                        })
+                    }else if(playerTime === null || playerTime === undefined || playerTime === 0){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Oops...',
+                            text: 'Your score is broken, come on!'
+                        })
+                    }else{
+
+                        let scores = JSON.parse(localStorage.getItem('scores'));
+
+                        if(scores === null || scores === undefined || scores.length === 0){
+                            scores = [];
+                        }
+
+                        var newScore = {
+                            pseudo : pseudo,
+                            time : parseInt(playerTime)
+                        };
+                        scores.push(newScore);
+                        scores.sort(orderByTime);
+                        localStorage.setItem('scores', JSON.stringify(scores));
+                        localStorage.setItem('currentPage', 'scores');
+                        location.reload();
+
+                    }
+                });
 
                 let dragAndDropManager = {
                     targetDrop : document.getElementById('vote-result'),
@@ -188,7 +331,7 @@
                     if(sectionElement !== null){
                         sectionElement.style.display = "block";
                     }else{
-                        document.getElementById('game').style.display = "block";
+                        document.getElementById('div-game').style.display = "block";
                     }
                 }
 
@@ -237,7 +380,7 @@
 
             <script src="game.js"></script>
             <script async defer
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfPVqw8SZzF5cWLAYbXsLpuhtN-0GuNtA&callback=initMap">
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1KrFuv2Ac2BNoIZ5l97CUERRSBZ94oro&callback=initMap">
             </script>
 
         </footer>

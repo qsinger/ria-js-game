@@ -469,19 +469,12 @@ async function render() {
             
         case "exit":
 
-            if(currentFloor === 1){
+            if(currentFloor === 4){
 
-                cmd = "rien";
+                localStorage.setItem('endTime', seconds);
+                localStorage.setItem('currentPage', 'score-saving');
+                location.reload();
 
-                clearMap();
-
-                const {value: name} = await Swal.fire({
-                    title: 'Great job',
-                    input: 'text',
-                    inputPlaceholder: 'Enter your name'
-                });
-
-                console.log(name);
 
             }else{
                 Swal.fire(
@@ -536,6 +529,16 @@ addRoomToMap();   //just for debugging, uncomment this and comment showAllMap fo
 //showAllMap();
 Animate();
 main();
+
+var seconds = 0;
+var el = document.getElementById('time');
+
+function incrementSeconds() {
+    seconds += 1;
+    el.innerText = seconds;
+}
+
+var cancel = setInterval(incrementSeconds, 1000);
 
 function newMaze(floorSize) {
     
