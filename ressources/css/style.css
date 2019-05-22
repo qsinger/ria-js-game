@@ -84,6 +84,7 @@ main {
 #interface {
     display: flex;
     margin: auto;
+    margin-top: -1px;
     flex-direction: row;
     width: 512px;
     padding-top: 10px;
@@ -121,8 +122,10 @@ main {
 
 #gameWrapper {
     height:486px;
+    display:inline-block;
     padding-left: 0;
     padding-right: 0;
+    margin-left:6.8%;
 }
 
 #mainMenuResp{
