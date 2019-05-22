@@ -52,12 +52,12 @@ const roomSize = 20;
 const roomVarsCount = 3;
 let cmd = "room";
 let currentFloor = 1;
-let floorSize = 5;
+let floorSize = 4;
 
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
-let exit = [-1, -1];
+let exit = [0, 1];
 
 //sprite vars
 let frameCount = 0;
@@ -490,16 +490,24 @@ function render() {
             
         case "exit":
 
-            if(currentFloor === 4){
-
+            if(currentFloor === 1){
+                /*console.log("SECS = "+seconds);
+                let minutes = seconds%60;
+                let seconds = seconds-(minutes*60);
+                Swal.fire(
+                    'CONGRATULATIONS!',
+                    'You completed the game in !' + minutes + "minutes & "+seconds+" seconds!",
+                    'success'
+                );*/
+                
                 localStorage.setItem('endTime', seconds);
                 localStorage.setItem('currentPage', 'score-saving');
                 location.reload();
 
             } else {
                 Swal.fire(
-                    'Good job!',
-                    'You finished the level!',
+                    'LEVEL COMPLETE!',
+                    'Time for the next level...',
                     'success'
                 );
 
