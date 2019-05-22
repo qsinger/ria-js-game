@@ -57,7 +57,7 @@ let floorSize = 4;
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
-let exit = [0, 1];
+let exit = [-1, -1];
 
 //sprite vars
 let frameCount = 0;
@@ -472,11 +472,7 @@ function nextFloor() {
     loadLevelData();
 
     reset();
-    addRoomToMap();   //just for debugging, uncomment this and comment showAllMap for playing
-    //showAllMap();
-    Animate();
-    main();
-
+    addRoomToMap();
 }
 
 
@@ -486,6 +482,9 @@ function render() {
     switch(cmd) {
         case "room":
             drawRoom();
+            ctx.font = "15px Russo One";
+            ctx.fillStyle = "white";
+            ctx.fillText("Level " + currentFloor, 10, 25);
             break;
             
         case "exit":
@@ -499,7 +498,7 @@ function render() {
             } else {
                 Swal.fire(
                     'LEVEL COMPLETE!',
-                    'Time for the next level...',
+                    'Next up is level ' + (currentFloor+1) + "!",
                     'success'
                 );
 
@@ -812,8 +811,8 @@ function setCharAt(str,index,chr) {
 
 function Animate() {
     
-    cycleLoop =  animations[player.state][player.direction].x;
-    sheetY = animations[player.state][player.direction].y;
+    let cycleLoop =  animations[player.state][player.direction].x;
+    let sheetY = animations[player.state][player.direction].y;
     
     frameCount++;
     
