@@ -7,6 +7,8 @@
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="ressources/css/style.css">
 
         <style>
             ul {
@@ -51,11 +53,13 @@
 
                     </canvas>
                 </div>
-                <div style="margin: 20px 0;">
-                    Ton temps : <span id="time"></span>
-                </div>
-                <div>
-                    <button class="button" onclick="location.reload()">Recommencer la partie !</button>
+                <div class="flexHoriz">
+                    <div id="timer" style="width:50%;">
+                        TIME : <span id="time"></span>
+                    </div>
+                    <div class="flexCenter" style="width:50%;">
+                        <button class="button" onclick="location.reload()">RESTART!</button>
+                    </div>
                 </div>
             </section>
 
@@ -189,10 +193,26 @@
 
                                 if(playerTime !== null){
                                     document.getElementById("player-time").value = playerTime;
-
+                                    console.log("SECS = " + playerTime);
+                                    let minutes = Math.floor(playerTime/60);
+                                    let seconds = playerTime-(minutes*60);
+                                    console.log("mins = "+minutes+", secs = "+seconds);
+                                    let msgString = 'You finished the game in ';
+                                    
+                                    if(minutes > 0)
+                                        msgString += minutes + " minutes & ";
+                                    
+                                    if(minutes > 0 && seconds > 0)
+                                        msgString += "& ";
+                                    
+                                    if(seconds > 0)
+                                        msgString += seconds + ' seconds!';
+                                    
+                                    msgString += '<br><br>Press OK to save your score...';
+                                    
                                     Swal.fire(
-                                        'Good job!',
-                                        'You finished the level in ' + playerTime + ' seconds, are you the god ? Save your score now !',
+                                        'CONGRATULATIONS',
+                                        msgString,
                                         'success'
                                     );
 
