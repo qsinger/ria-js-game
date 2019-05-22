@@ -489,17 +489,9 @@ function render() {
             break;
             
         case "exit":
-
-            if(currentFloor === 1){
-                /*console.log("SECS = "+seconds);
-                let minutes = seconds%60;
-                let seconds = seconds-(minutes*60);
-                Swal.fire(
-                    'CONGRATULATIONS!',
-                    'You completed the game in !' + minutes + "minutes & "+seconds+" seconds!",
-                    'success'
-                );*/
-                
+            
+            //if have finished 3 floors
+            if(currentFloor === 3){
                 localStorage.setItem('endTime', seconds);
                 localStorage.setItem('currentPage', 'score-saving');
                 location.reload();
