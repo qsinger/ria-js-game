@@ -310,7 +310,7 @@ function getImage(sym) {
     switch(sym) {
         
         case "@":
-            img.src = "ressources/images/tile_1.jpg";
+            img.src = "ressources/images/floor.jpg";
             break;
             
         case "#":
@@ -326,7 +326,7 @@ function getImage(sym) {
             break;
             
         case "X" :
-            img.src = "ressources/images/wall_test.jpg";
+            img.src = "ressources/images/wall.jpg";
             break;
             
         case "W" :
@@ -346,7 +346,7 @@ function getImage(sym) {
 function loadLevelData() {
     
     var path = "ressources/rooms/" + currentLevel + "/" + roomTypes[coord[0]][coord[1]] + ".txt";
-    console.log("ROOM TYPE = "+roomTypes[coord[0]][coord[1]]);
+    
     $.get(path, function(data) {
         
         //removes all line breaks
@@ -643,7 +643,6 @@ function newMaze(floorSize) {
             
             //if exit doesn't exist & position is > half of x OR y then make exit
             if(exit[0] == -1 && (i > Math.floor(floorSize/2) || j > Math.floor(floorSize/2))) {
-                console.log("EXIT IS AT : ["+i+"] ["+j+"]");
                 exit[0] = i;
                 exit[1] = j;
             }
