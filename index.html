@@ -45,7 +45,7 @@
 
             <section style="display: none;" id="div-game">
                 <h1>GAME</h1>
-                <div id="gameWrapper">
+                <div id="gameWrapper" class="grayBorder">
                     <canvas id="game">
 
                     </canvas>
@@ -53,9 +53,9 @@
 
                     </canvas>
                 </div>
-                <div class="flexHoriz">
+                <div id="interface" class="grayBorder">
                     <div id="timer" style="width:50%;">
-                        TIME : <span id="time"></span>
+                        TIME : <span id="time"></span> s
                     </div>
                     <div class="flexCenter" style="width:50%;">
                         <button class="button" onclick="location.reload()">RESTART!</button>
@@ -68,13 +68,13 @@
                 <form id="save-score">
                     <div class="form-group">
                         <label for="pseudo">
-                            Pseudo
+                            Name
                         </label>
                         <input required type="text" name="pseudo" id="pseudo" placeholder="Pseudo">
                     </div><!--
                     --><div class="form-group">
                         <label>
-                            Temps (secondes)
+                            Time (s)
                         </label>
                         <input type="text" disabled id="player-time">
                     </div>
