@@ -51,14 +51,14 @@ let animations = {
 const roomSize = 20;
 let cmd = "room";
 let currentFloor = 1;
-
 let floorSize = 5;
+
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
-let exit = [0, 1];
+let exit = [-1, -1];
 
-//variables for sprite stuff
+//sprite vars
 let frameCount = 0;
 const spriteSize = 144;
 let currentLoopIndex = 0;
@@ -475,8 +475,7 @@ async function render() {
                 localStorage.setItem('currentPage', 'score-saving');
                 location.reload();
 
-
-            }else{
+            } else {
                 Swal.fire(
                     'Good job!',
                     'You finished the level!',
@@ -485,7 +484,6 @@ async function render() {
 
                 nextFloor();
             }
-
             break;
     }
 	if (playerReady) {
@@ -608,13 +606,36 @@ function newMaze(floorSize) {
             currentCell = path.pop();
         }
     }
-    
+    let countExits = 0;
     for (let i = 0; i < cells.length; i++) {
         map[i] = [];
+        
+        //EXIT PLACEMENT :
+        //for each room counts the number of exits
         for(let j = 0; j < cells.length; j++) {
-            map[i][j] = cells[i][j].join('');
+            cells[i][j].forEach(function(element) {
+                if (element == 1)
+                    countExits++;
+        });
+        //if the room is a deadend
+        if(countExits == 1) {
+            //if exit doesn't exist & position is > half of x OR y then make exit
+            if(exit[0] == -1 && (i > Math.floor(floorSize/2) || j > Math.floor(floorSize/2))) {
+                //console.log("place exit at ["+i+"]["+j+"]?");
+                exit[0] = i;
+                exit[1] = j;
+            }
+
+        }
+        map[i][j] = cells[i][j].join('');
+        countExits = 0;
         }
     }
+    
+    //if exit is not set by the end of creation
+    if(exit[0] == -1 || exit[1] == -1)
+        console.log("ERROR WITH EXIT GENERATION");
+    
     return map;
 }
 
