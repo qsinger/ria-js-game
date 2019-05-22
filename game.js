@@ -49,6 +49,7 @@ let animations = {
 }
 
 const roomSize = 20;
+const roomVarsCount = 3;
 let cmd = "room";
 let currentFloor = 1;
 let floorSize = 5;
@@ -80,6 +81,8 @@ let ctxMap = mapCanvas.getContext("2d");
 //CREATES COORDINATES ARRAY FOR ROOMS
 let grid = [];
 let mapGrid = [];
+let roomTypes = [];
+
 for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
     for(var y = 0; y <= roomSize; y++){
@@ -96,6 +99,21 @@ for(var x = 0; x <= floorSize; x++) {
         mapGrid[x][y] = [(mapCanvas.width/floorSize)*x, (mapCanvas.height/floorSize)*y];
     }
 }
+
+//CREATES types for each room
+setRoomTypes();
+function setRoomTypes() {
+    let min = 0;
+    let max = roomVarsCount;
+    
+    for(var x = 0; x <= floorSize; x++) {
+        roomTypes[x] = [];
+        for(var y = 0; y <= floorSize; y++){
+            roomTypes[x][y] = Math.floor(Math.random() * (+max - +min)) + +min;
+        }
+    }
+}
+
 
 let map =  newMaze(floorSize);
 let currentLevel = map[coord[0]][coord[1]];
@@ -326,7 +344,9 @@ function getImage(sym) {
 
 //Transforms txt to a room plan
 function loadLevelData() {
-    var path = "ressources/rooms2/" + currentLevel + ".txt";
+    
+    var path = "ressources/rooms/" + currentLevel + "/" + roomTypes[coord[0]][coord[1]] + ".txt";
+    console.log("ROOM TYPE = "+roomTypes[coord[0]][coord[1]]);
     $.get(path, function(data) {
         
         //removes all line breaks
@@ -445,6 +465,7 @@ function nextFloor() {
 
     map =  newMaze(floorSize);
     currentLevel = map[coord[0]][coord[1]];
+    setRoomTypes();
 
     playerReady = true;
 
@@ -460,7 +481,7 @@ function nextFloor() {
 
 
 //DRAW
-async function render() {
+function render() {
     
     switch(cmd) {
         case "room":
@@ -619,9 +640,10 @@ function newMaze(floorSize) {
         });
         //if the room is a deadend
         if(countExits == 1) {
+            
             //if exit doesn't exist & position is > half of x OR y then make exit
             if(exit[0] == -1 && (i > Math.floor(floorSize/2) || j > Math.floor(floorSize/2))) {
-                //console.log("place exit at ["+i+"]["+j+"]?");
+                console.log("EXIT IS AT : ["+i+"] ["+j+"]");
                 exit[0] = i;
                 exit[1] = j;
             }
