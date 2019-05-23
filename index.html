@@ -199,6 +199,7 @@
 
                                 if(playerTime !== null){
                                     document.getElementById("player-time").value = playerTime;
+                                    document.getElementById("pseudo").value = "";
                                     console.log("SECS = " + playerTime);
                                     let minutes = Math.floor(playerTime/60);
                                     let seconds = playerTime-(minutes*60);
