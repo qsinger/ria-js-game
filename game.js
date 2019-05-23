@@ -9,7 +9,7 @@ var player = {
     direction: 1
 };
 
-var audio = new Audio('ressources/music.mp3');
+var audio = document.getElementById("myAudio");
 audio.play();
 
 let animations = {
