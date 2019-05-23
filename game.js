@@ -9,13 +9,6 @@ var player = {
     direction: 1
 };
 
-var x = document.createElement("AUDIO");
-
-if (x.canPlayType("audio/mpeg")) {
-    x.setAttribute("src","ressources/music.mp3");
-}
-document.body.appendChild(x);
-x.play();
 let animations = {
     idle : {
         0 : {
