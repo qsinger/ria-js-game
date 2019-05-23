@@ -10,7 +10,14 @@ var player = {
 };
 
 var audio = document.getElementById("myAudio");
-audio.play();
+function playAudio() {
+    audio.play();
+}
+
+function pauseAudio() {
+    audio.pause();
+}
+playAudio();
 
 let animations = {
     idle : {
