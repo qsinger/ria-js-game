@@ -507,6 +507,9 @@ function render() {
             
             //if have finished 3 floors
             if(currentFloor === 3){
+
+                cmd = "rien";
+
                 localStorage.setItem('endTime', seconds);
                 localStorage.setItem('currentPage', 'score-saving');
                 location.reload();
