@@ -563,14 +563,6 @@ reset();
 addRoomToMap();   //just for debugging, uncomment this and comment showAllMap for playing
 //showAllMap();
 Animate();
-
-//music wont work on chrome
-let music = document.getElementById("music");
-let promise = music.play();
-if (promise !== null){
-    promise.catch(() => { music.play(); })
-}
-
 main();
 
 var seconds = 0;
