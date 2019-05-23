@@ -132,7 +132,6 @@ function setRoomTypes() {
 
 
 let map =  newMaze(floorSize);
-console.log(map);
 let currentLevel = map[coord[0]][coord[1]];
 
 //PLAYER IMAGE

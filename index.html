@@ -9,6 +9,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
         <link href="https://fonts.googleapis.com/css?family=Montserrat|Russo+One&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="ressources/css/style.css">
+        <link rel="shortcut icon" type="image/png" href="favicon.icon"/>
 
         <style>
             ul {
@@ -194,10 +195,8 @@
                                 if(playerTime !== null){
                                     document.getElementById("player-time").value = playerTime;
                                     document.getElementById("pseudo").value = "";
-                                    console.log("SECS = " + playerTime);
                                     let minutes = Math.floor(playerTime/60);
                                     let seconds = playerTime-(minutes*60);
-                                    console.log("mins = "+minutes+", secs = "+seconds);
                                     let msgString = 'You finished the game in ';
                                     
                                     if(minutes > 0)
