@@ -115,6 +115,10 @@ main {
     margin-top:0;
 }
 
+#content {
+    padding-top:0px;
+}
+
 #game {
     /*background-color: #000000;*/
     width:512px;
