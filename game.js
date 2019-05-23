@@ -49,16 +49,17 @@ let animations = {
 }
 
 const roomSize = 20;
+const roomVarsCount = 3;
 let cmd = "room";
 let currentFloor = 1;
+let floorSize = 4;
 
-let floorSize = 5;
 let then = Date.now();
 let keysDown = {};
 let coord = [0, 0];
-let exit = [0, 1];
+let exit = [-1, -1];
 
-//variables for sprite stuff
+//sprite vars
 let frameCount = 0;
 const spriteSize = 144;
 let currentLoopIndex = 0;
@@ -75,11 +76,29 @@ mapCanvas.width = 512;
 mapCanvas.height = 480;
 
 let ctxMap = mapCanvas.getContext("2d");
+var soundFile = document.createElement("audio");
+soundFile.preload = "auto";
+
+//Load the sound file (using a source element for expandability)
+var src = document.createElement("source");
+src.src = "music.mp3";
+
+//Plays the sound
+function play() {
+   //Set the current time for the audio file to the beginning
+   soundFile.currentTime = 0.01;
+   soundFile.volume = volume;
+
+   //Due to a bug in Firefox, the audio needs to be played after a delay
+   setTimeout(function(){soundFile.play();},1);
+}
 
 
 //CREATES COORDINATES ARRAY FOR ROOMS
 let grid = [];
 let mapGrid = [];
+let roomTypes = [];
+
 for(var x = 0; x <= roomSize; x++) {
     grid[x] = [];
     for(var y = 0; y <= roomSize; y++){
@@ -96,6 +115,21 @@ for(var x = 0; x <= floorSize; x++) {
         mapGrid[x][y] = [(mapCanvas.width/floorSize)*x, (mapCanvas.height/floorSize)*y];
     }
 }
+
+//CREATES types for each room
+setRoomTypes();
+function setRoomTypes() {
+    let min = 0;
+    let max = roomVarsCount;
+    
+    for(var x = 0; x <= floorSize; x++) {
+        roomTypes[x] = [];
+        for(var y = 0; y <= floorSize; y++){
+            roomTypes[x][y] = Math.floor(Math.random() * (+max - +min)) + +min;
+        }
+    }
+}
+
 
 let map =  newMaze(floorSize);
 let currentLevel = map[coord[0]][coord[1]];
@@ -292,7 +326,7 @@ function getImage(sym) {
     switch(sym) {
         
         case "@":
-            img.src = "ressources/images/tile_1.jpg";
+            img.src = "ressources/images/floor.jpg";
             break;
             
         case "#":
@@ -308,14 +342,14 @@ function getImage(sym) {
             break;
             
         case "X" :
-            img.src = "ressources/images/wall_test.jpg";
+            img.src = "ressources/images/wall.jpg";
             break;
             
         case "W" :
         case "A" :
         case "S" :
         case "D" :
-            img.src = "ressources/images/door_test.jpg";
+            img.src = "ressources/images/floor.jpg";
             break;
             
         default:
@@ -326,7 +360,9 @@ function getImage(sym) {
 
 //Transforms txt to a room plan
 function loadLevelData() {
-    var path = "ressources/rooms2/" + currentLevel + ".txt";
+    
+    var path = "ressources/rooms/" + currentLevel + "/" + roomTypes[coord[0]][coord[1]] + ".txt";
+    
     $.get(path, function(data) {
         
         //removes all line breaks
@@ -445,47 +481,45 @@ function nextFloor() {
 
     map =  newMaze(floorSize);
     currentLevel = map[coord[0]][coord[1]];
+    setRoomTypes();
 
     playerReady = true;
 
     loadLevelData();
 
     reset();
-    addRoomToMap();   //just for debugging, uncomment this and comment showAllMap for playing
-    //showAllMap();
-    Animate();
-    main();
-
+    addRoomToMap();
 }
 
 
 //DRAW
-async function render() {
+function render() {
     
     switch(cmd) {
         case "room":
             drawRoom();
+            ctx.font = "15px Russo One";
+            ctx.fillStyle = "white";
+            ctx.fillText("Level " + currentFloor, 10, 25);
             break;
             
         case "exit":
-
-            if(currentFloor === 4){
-
+            
+            //if have finished 3 floors
+            if(currentFloor === 3){
                 localStorage.setItem('endTime', seconds);
                 localStorage.setItem('currentPage', 'score-saving');
                 location.reload();
 
-
-            }else{
+            } else {
                 Swal.fire(
-                    'Good job!',
-                    'You finished the level!',
+                    'LEVEL COMPLETE!',
+                    'Next up is level ' + (currentFloor+1) + "!",
                     'success'
                 );
 
                 nextFloor();
             }
-
             break;
     }
 	if (playerReady) {
@@ -608,13 +642,36 @@ function newMaze(floorSize) {
             currentCell = path.pop();
         }
     }
-    
+    let countExits = 0;
     for (let i = 0; i < cells.length; i++) {
         map[i] = [];
+        
+        //EXIT PLACEMENT :
+        //for each room counts the number of exits
         for(let j = 0; j < cells.length; j++) {
-            map[i][j] = cells[i][j].join('');
+            cells[i][j].forEach(function(element) {
+                if (element == 1)
+                    countExits++;
+        });
+        //if the room is a deadend
+        if(countExits == 1) {
+            
+            //if exit doesn't exist & position is > half of x OR y then make exit
+            if(exit[0] == -1 && (i > Math.floor(floorSize/2) || j > Math.floor(floorSize/2))) {
+                exit[0] = i;
+                exit[1] = j;
+            }
+
+        }
+        map[i][j] = cells[i][j].join('');
+        countExits = 0;
         }
     }
+    
+    //if exit is not set by the end of creation
+    if(exit[0] == -1 || exit[1] == -1)
+        console.log("ERROR WITH EXIT GENERATION");
+    
     return map;
 }
 
@@ -770,8 +827,8 @@ function setCharAt(str,index,chr) {
 
 function Animate() {
     
-    cycleLoop =  animations[player.state][player.direction].x;
-    sheetY = animations[player.state][player.direction].y;
+    let cycleLoop =  animations[player.state][player.direction].x;
+    let sheetY = animations[player.state][player.direction].y;
     
     frameCount++;
     

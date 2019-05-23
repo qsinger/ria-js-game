@@ -7,6 +7,9 @@
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Russo+One&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="ressources/css/style.css">
+        <link rel="shortcut icon" type="image/png" href="favicon.icon"/>
 
         <style>
             ul {
@@ -41,22 +44,30 @@
 
         <div id="content">
 
-            <section style="display: none;" id="div-game">
-                <h1>GAME</h1>
-                <div id="gameWrapper">
+            <section class="flexCenter" style="display: none;" id="div-game">
+                <center>
+                    <img src="ressources/images/title.png" style="height:80px;">
+                </center>
+                <div id="gameWrapper" class="grayBorder">
                     <canvas id="game">
 
                     </canvas>
-                    <canvas id="map">
+                    <canvas id="map" style="margin-left:-5px;">
 
                     </canvas>
                 </div>
-                <div style="margin: 20px 0;">
-                    Ton temps : <span id="time"></span>
+                <div id="interface" class="grayBorder">
+                    <div id="timer" style="width:50%;">
+                        TIME : <span id="time"></span> s
+                    </div>
+                    <div class="flexCenter" style="width:50%;">
+                        <button class="button pixelText" onclick="location.reload()">RESTART!</button>
+                    </div>
                 </div>
-                <div>
-                    <button class="button" onclick="location.reload()">Recommencer la partie !</button>
-                </div>
+                <audio controls autoplay loop>
+                  <source src="ressources/music.mp3" type="audio/mpeg">
+                  <p>Your browser doesn't support HTML5 audio!</p>
+                </audio>
             </section>
 
             <section style="display: none;" id="score-saving">
@@ -64,13 +75,13 @@
                 <form id="save-score">
                     <div class="form-group">
                         <label for="pseudo">
-                            Pseudo
+                            Name
                         </label>
                         <input required type="text" name="pseudo" id="pseudo" placeholder="Pseudo">
                     </div><!--
                     --><div class="form-group">
                         <label>
-                            Temps (secondes)
+                            Time (s)
                         </label>
                         <input type="text" disabled id="player-time">
                     </div>
@@ -85,13 +96,7 @@
             </section>
 
             <section style="display: none;" id="presentation">
-                <h1>Présentation</h1>
-
-                <video width="320" height="240" controls>
-                    <source src="presentation.mp4" type="video/mp4">
-                    <source src="presentation.ogg" type="video/ogg">
-                    Ton navigateur est nul.
-                </video>
+                <h1>Noter le jeu</h1>
 
                 <h2>Quelle note donnez-vous à ce jeu ?</h2>
 
@@ -152,7 +157,7 @@
                 var menu = '{ "elements" : [' +
                     '{ "id":"div-game" , "text":"Jouer" },' +
                     '{ "id":"div-map" , "text":"T\'as ou les vaches ?" },' +
-                    '{ "id":"presentation" , "text":"Présentation" },' +
+                    '{ "id":"presentation" , "text":"Note le jeu" },' +
                     '{ "id":"ajax" , "text":"Ajax Amsterdam" },' +
                     '{ "id":"scores" , "text":"Scores" } ]}';
 
@@ -189,10 +194,25 @@
 
                                 if(playerTime !== null){
                                     document.getElementById("player-time").value = playerTime;
-
+                                    document.getElementById("pseudo").value = "";
+                                    let minutes = Math.floor(playerTime/60);
+                                    let seconds = playerTime-(minutes*60);
+                                    let msgString = 'You finished the game in ';
+                                    
+                                    if(minutes > 0)
+                                        msgString += minutes + " minutes ";
+                                    
+                                    if(minutes > 0 && seconds > 0)
+                                        msgString += "& ";
+                                    
+                                    if(seconds > 0)
+                                        msgString += seconds + ' seconds!';
+                                    
+                                    msgString += '<br><br>Press OK to save your score...';
+                                    
                                     Swal.fire(
-                                        'Good job!',
-                                        'You finished the level in ' + playerTime + ' seconds, are you the god ? Save your score now !',
+                                        'CONGRATULATIONS',
+                                        msgString,
                                         'success'
                                     );
 
@@ -382,7 +402,6 @@
             <script async defer
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1KrFuv2Ac2BNoIZ5l97CUERRSBZ94oro&callback=initMap">
             </script>
-
         </footer>
 
     </body>
