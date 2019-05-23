@@ -11,6 +11,7 @@ var player = {
 
 var audio = document.getElementById("myAudio");
 audio.load();
+audio.autoplay = false;
 setTimeout(function() {
     audio.play();
 }, 500);
