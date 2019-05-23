@@ -10,14 +10,20 @@ var player = {
 };
 
 var audio = document.getElementById("myAudio");
-function playAudio() {
-    audio.play();
+
+// Show loading animation.
+var playPromise = audio.play();
+
+if (playPromise !== undefined) {
+    playPromise.then(_ => {
+        audio.pause();
+    })
+        .catch(error => {
+            // Auto-play was prevented
+            // Show paused UI.
+        });
 }
 
-function pauseAudio() {
-    audio.pause();
-}
-playAudio();
 
 let animations = {
     idle : {
