@@ -17,6 +17,7 @@ var playPromise = audio.play();
 if (playPromise !== undefined) {
     playPromise.then(_ => {
         audio.pause();
+        audio.play();
     })
         .catch(error => {
             // Auto-play was prevented
