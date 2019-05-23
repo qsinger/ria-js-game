@@ -68,6 +68,7 @@
                   <p>Your browser doesn't support HTML5 audio!</p>
                 </audio>
             </section>
+
             <section style="display: none;" id="score-saving">
                 <h1>Enregistre ton score !</h1>
                 <form id="save-score">
@@ -94,13 +95,7 @@
             </section>
 
             <section style="display: none;" id="presentation">
-                <h1>Présentation</h1>
-
-                <video width="320" height="240" controls>
-                    <source src="presentation.mp4" type="video/mp4">
-                    <source src="presentation.ogg" type="video/ogg">
-                    Ton navigateur est nul.
-                </video>
+                <h1>Noter le jeu</h1>
 
                 <h2>Quelle note donnez-vous à ce jeu ?</h2>
 
@@ -161,7 +156,7 @@
                 var menu = '{ "elements" : [' +
                     '{ "id":"div-game" , "text":"Jouer" },' +
                     '{ "id":"div-map" , "text":"T\'as ou les vaches ?" },' +
-                    '{ "id":"presentation" , "text":"Présentation" },' +
+                    '{ "id":"presentation" , "text":"Note le jeu" },' +
                     '{ "id":"ajax" , "text":"Ajax Amsterdam" },' +
                     '{ "id":"scores" , "text":"Scores" } ]}';
 
