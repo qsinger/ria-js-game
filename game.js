@@ -76,6 +76,22 @@ mapCanvas.width = 512;
 mapCanvas.height = 480;
 
 let ctxMap = mapCanvas.getContext("2d");
+var soundFile = document.createElement("audio");
+soundFile.preload = "auto";
+
+//Load the sound file (using a source element for expandability)
+var src = document.createElement("source");
+src.src = "music.mp3";
+
+//Plays the sound
+function play() {
+   //Set the current time for the audio file to the beginning
+   soundFile.currentTime = 0.01;
+   soundFile.volume = volume;
+
+   //Due to a bug in Firefox, the audio needs to be played after a delay
+   setTimeout(function(){soundFile.play();},1);
+}
 
 
 //CREATES COORDINATES ARRAY FOR ROOMS
@@ -116,6 +132,7 @@ function setRoomTypes() {
 
 
 let map =  newMaze(floorSize);
+console.log(map);
 let currentLevel = map[coord[0]][coord[1]];
 
 //PLAYER IMAGE
